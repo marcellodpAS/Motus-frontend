@@ -5,7 +5,8 @@ TypeScript, Expo Router, NativeWind e Zustand.
 
 ## Requisiti e installazione
 
-- Node.js `>= 20.19.4` (requisito dell'Expo SDK 57)
+- Expo SDK `54.0.36` (React Native `0.81.5`, React `19.1.0`)
+- Node.js `22.13.x` (runtime fissato in `.nvmrc`; compatibile con Expo SDK 54)
 - pnpm `9.7.1` (versione dichiarata in `package.json`)
 
 Con Corepack:
@@ -65,6 +66,10 @@ NativeWind 4 usa Tailwind CSS 3 e Metro. Il CSS globale è
 `src/styles/global.css`, importato una sola volta nel root layout. I componenti
 usano `className` per gli stili statici, preferendo token semantici come
 `bg-background`, `text-foreground` e `text-primary`.
+
+`expo-system-ui` abilita `userInterfaceStyle: "automatic"` nel workflow CNG e
+`expo-splash-screen` configura lo splash tramite plugin Expo. Lo status bar segue
+il tema del sistema.
 
 `src/theme/tokens.js` è la fonte di verità provvisoria: è consumata sia dai
 moduli TypeScript in `src/theme` sia da `tailwind.config.js`. I token sono
