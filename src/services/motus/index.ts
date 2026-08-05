@@ -23,3 +23,5 @@ export type {
 export type { GeocodingStatus, Pagination, Price, Station } from "./types";
 
 export * as stations from "./stations";
+
+export { stationTitle } from "./stationDisplay";

@@ -1,16 +1,6 @@
-import type { Station } from "@/services/motus";
-
 /**
- * Same fallback chain as VS2's result row
- * (docs/motus/feature-backlog.md §VS2 note: "nome_impianto -> bandiera ->
- * id_impianto", covering the live-observed empty `nome_impianto` string on
- * impianto 57660) — kept identical here so the automotive and mobile
- * surfaces never disagree on what a station is called.
+ * Re-exports the shared implementation (src/services/motus/stationDisplay.ts)
+ * so the mobile and automotive surfaces read the fallback chain from a
+ * single place instead of two literal copies (Task 17 stabilization).
  */
-export function stationTitle(station: Station): string {
-  return (
-    station.nome_impianto ||
-    station.bandiera ||
-    `Impianto ${station.id_impianto}`
-  );
-}
+export { stationTitle } from "@/services/motus/stationDisplay";

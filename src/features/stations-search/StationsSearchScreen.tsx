@@ -5,6 +5,7 @@ import { ListItem } from "@/components/molecules/ListItem";
 import { ListScreenTemplate } from "@/components/templates/ListScreenTemplate";
 import type { FunctionalListStatus } from "@/components/organisms/FunctionalList";
 import { useStationsSearch } from "@/features/stations-search/useStationsSearch";
+import { stationTitle } from "@/services/motus/stationDisplay";
 import type { Station } from "@/services/motus/types";
 
 /** Cheapest price across `prices[]`, or `undefined` (handles the observed `prices: []` case). */
@@ -14,15 +15,6 @@ function cheapestPrice(station: Station): string | undefined {
     price.prezzo < min.prezzo ? price : min,
   );
   return `${cheapest.prezzo.toFixed(3)} €`;
-}
-
-/** `nome_impianto` is observed empty live (impianto 57660); fall back to `bandiera`, then the id. */
-function stationTitle(station: Station): string {
-  return (
-    station.nome_impianto ||
-    station.bandiera ||
-    `Impianto ${station.id_impianto}`
-  );
 }
 
 /**
