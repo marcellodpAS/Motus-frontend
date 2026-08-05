@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "Bash(mkdir -p /Users/marcellodepaola/Desktop/Projects/Motus-repo/Motus-frontend/docs/motus/adr)"
+      "Bash(mkdir -p /Users/marcellodepaola/Desktop/Projects/Motus-repo/Motus-frontend/docs/motus/adr)",
+      "Bash(node -e \"console.log\\(require\\('/Users/marcellodepaola/Desktop/Projects/Motus-repo/Motus-frontend/node_modules/expo-router/package.json'\\).exports\\)\")"
     ],
     "additionalDirectories": [
       "/Users/marcellodepaola/Desktop/Projects/Motus-repo/Motus-frontend/docs/motus"
