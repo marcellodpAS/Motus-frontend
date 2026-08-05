@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="200" viewBox="0 0 640 200">
+  <defs>
+    <linearGradient id="markGradientSmallDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1D4ED8"/>
+      <stop offset="1" stop-color="#93C5FD"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="200" fill="#0F172A"/>
+  <g transform="translate(0,0) scale(0.166)">
+    <path d="M 310 700 L 512 290 L 714 700" fill="none" stroke="url(#markGradientSmallDark)" stroke-width="170" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="185" y="132" font-family="-apple-system, system-ui, 'Segoe UI', Roboto, sans-serif" font-size="92" font-weight="600" fill="#FFFFFF" letter-spacing="0.5">Motus</text>
+</svg>
