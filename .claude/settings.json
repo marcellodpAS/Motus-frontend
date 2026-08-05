@@ -1,4 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(mkdir -p /Users/marcellodepaola/Desktop/Projects/Motus-repo/Motus-frontend/docs/motus/adr)"
+    ],
+    "additionalDirectories": [
+      "/Users/marcellodepaola/Desktop/Projects/Motus-repo/Motus-frontend/docs/motus"
+    ]
+  },
   "enabledPlugins": {
     "expo@claude-plugins-official": true
   }
