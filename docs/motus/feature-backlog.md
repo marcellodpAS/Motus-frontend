@@ -83,7 +83,7 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 
 ---
 
-## VS3 — Dettaglio impianto (S03)
+## VS3 — Dettaglio impianto (S03) — ✅ Completata (Task 18, 2026-08-05)
 
 **Scopo**: mostrare i dati di un impianto e tutti i suoi prezzi correnti (UC3).
 
@@ -107,9 +107,11 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 
 **Criterio di completamento**: dato un `id_impianto` valido passato alla route, la schermata mostra i dati reali o uno degli stati alternativi coperti dai test; `pnpm validate` verde.
 
+**Note di implementazione (Task 18)**: aggiunto `stations.getById` (`src/services/motus/stations.ts`) e il tipo `StationSummary` (`Omit<Station, "prices">`, `src/services/motus/types.ts`) per riflettere che il server nidifica `prices` separatamente dall'oggetto impianto su questo endpoint. `useStationDetail` (`src/features/station-detail/useStationDetail.ts`) possiede il ciclo di richiesta e distingue esplicitamente uno stato `"not-found"` (404) da uno stato `"error"` generico (rete/500) — il primo non mostra un'azione "Riprova" priva di senso (ripetere la stessa richiesta su un id inesistente/malformato produce lo stesso 404), il secondo sì. `StationDetailScreen` non mostra più solo l'`id_impianto` grezzo: rende tutti i campi di `station.*` (con fallback testuale esplicito "Non disponibile"/"Non disponibili" per coordinate mancanti, verificato dal vivo su impianto con `geocoding_status: "source_only"`) e la lista prezzi (con messaggio esplicito per `prices: []`, verificato dal vivo su impianto 3498). Verificato realmente dal vivo contro il backend raggiungibile in questa sessione (`http://192.168.1.148:8080`): `GET /api/stations/{id}` con un id reale (risposta 200, `station` senza campo `prices`, 6 righe prezzo), 404 numerico (`"impianto non trovato"`) e 404 malformato (`"endpoint non trovato"`) — corpi identici a quanto documentato in `api-contract.md`. Test aggiunti: `__tests__/services/motus/stations.test.ts` (describe `getById`), `__tests__/features/useStationDetail.test.ts`, `__tests__/features/StationDetailScreen.test.tsx` (riscritto: popolato, prezzi vuoti, coordinate mancanti, entrambi i 404, errore+retry, back). Estratto `cheapestPrice` da `StationsSearchScreen` a `src/services/motus/stationDisplay.ts` (riusato anche da S04) per evitare una terza copia della stessa logica.
+
 ---
 
-## VS4 — Ricerca prezzi per carburante (S02)
+## VS4 — Ricerca prezzi per carburante (S02) — ✅ Completata (Task 18, 2026-08-05)
 
 **Scopo**: permettere di cercare prezzi filtrando per tipo di carburante, provincia o comune (UC4).
 
@@ -131,9 +133,11 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 
 **Criterio di completamento**: ricerca per carburante funzionante con risultati reali o stati alternativi coperti dai test; selezione riga naviga a un `id_impianto` valido; `pnpm validate` verde.
 
+**Note di implementazione (Task 18)**: aggiunto `src/services/motus/prices.ts` (`search`, `GET /api/prices`) e il tipo `PriceRow` (`src/services/motus/types.ts`, estende `Price` con i campi appiattiti `nome_impianto`/`comune`/`provincia`/`via_geocoded`/coordinate — mai forzato sul tipo `Station`, ADR-0001). `usePricesSearch` (`src/features/prices-search/usePricesSearch.ts`) introduce uno stato `"idle"` esplicito: **non** effettua alcuna chiamata finché l'utente non imposta almeno un filtro (vincolo di prodotto verificato in `api-screen-mapping.md` §S02 — evita di scaricare l'intera tabella da ~93k righe all'apertura). `PricesSearchScreen` espone tre `TextInput` indipendenti (carburante/comune/provincia, nessun parametro `q` unificato su questo endpoint, a differenza di S01) e un messaggio esplicito diverso per "nessun filtro ancora inserito" vs "nessun risultato per i filtri inseriti". Aggiunto anche `src/services/motus/priceFormat.ts` (`parseDataComunicazione`/`formatDataComunicazione`) per il formato non-ISO `GG/MM/AAAA HH:MM:SS`, condiviso con S03. Verificato dal vivo: `GET /api/prices?limit=2` (200, chiavi della riga identiche a quelle modellate in `PriceRow`, `total: 93373`). Test aggiunti: `__tests__/services/motus/prices.test.ts`, `__tests__/services/motus/priceFormat.test.ts` (parsing esplicito, non passato a `new Date(string)`), `__tests__/features/usePricesSearch.test.ts`, `__tests__/features/PricesSearchScreen.test.tsx`.
+
 ---
 
-## VS5 — Impianti vicini "vicino a me" (S04)
+## VS5 — Impianti vicini "vicino a me" (S04) — ✅ Completata (Task 18, 2026-08-05)
 
 **Scopo**: trovare gli impianti più vicini a una posizione geografica data, ordinati per distanza (UC5).
 
@@ -160,9 +164,11 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 
 **Criterio di completamento**: con permesso di posizione concesso, la schermata mostra impianti reali ordinati per distanza o uno degli stati alternativi coperti dai test; con permesso negato, mostra un fallback esplicito invece di una lista vuota indistinguibile da "nessun risultato"; `pnpm validate` verde.
 
+**Note di implementazione (Task 18)**: aggiunta la dipendenza `expo-location@~19.0.8` (unica pianificata dal backlog, VS5) via `npx expo install expo-location`, con config plugin registrato in `app.json` (`locationWhenInUsePermission` per iOS; Android aggiunge automaticamente `ACCESS_COARSE_LOCATION`/`ACCESS_FINE_LOCATION`). `useNearbyStations` (`src/features/nearby-stations/useNearbyStations.ts`) incapsula l'intera catena come macchina a stati esplicita — `requesting-permission` → `permission-denied` | `unavailable` (servizi di localizzazione disattivati, `Location.hasServicesEnabledAsync`) → `loading` → `success`/`error` — cablata a `stations.nearby` (nuovo in `src/services/motus/stations.ts`, normalizza `total_available` → `total` per coerenza con `Pagination`, ADR-0001, e fissa `offset: 0` dato che il server lo ignora su questo endpoint). `limit=20` passato esplicitamente (il default reale del server è 50, non 20 come dichiarato nel README, `api-discrepancies.md`). `NearbyStationsScreen` riusa `stationTitle`/`cheapestPrice` di S01. Verificato dal vivo: `GET /api/stations/nearby?lat=41.9028&lon=12.4964&limit=2` (200, `pagination: {"limit":2,"total_available":23961}`, nessun campo `offset` — coerente con quanto documentato). Test aggiunti: estensione di `__tests__/services/motus/stations.test.ts` (describe `nearby`), `__tests__/features/useNearbyStations.test.ts` (permesso concesso/negato/permanentemente negato, servizi disattivati, errore+retry), `__tests__/features/NearbyStationsScreen.test.tsx`.
+
 ---
 
-## VS6 — Shell di navigazione
+## VS6 — Shell di navigazione — ✅ Completata (Task 18, 2026-08-05)
 
 **Scopo**: collegare i tre punti di ingresso (S01, S02, S04) e la destinazione comune (S03) in una navigazione coerente.
 
@@ -179,6 +185,8 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 **Dipendenze**: 🧱 VS2, VS3, VS4, VS5 tutte completate (è l'unica slice che dipende da altre feature, per costruzione — è la loro composizione, non una vertical slice indipendente in senso stretto).
 
 **Criterio di completamento**: l'app avviata espone tutti e tre i punti di ingresso, ciascuno raggiunge S03 correttamente; nessuna schermata delle 4 rimane isolata; `pnpm validate` verde.
+
+**Note di implementazione (Task 18)**: ADR-0005 lasciava la scelta tecnica aperta fino a quando ≥ 2 schermate di ingresso fossero reali — con S01/S02/S04 tutte complete in questa stessa sessione, la schermata bootstrap (`src/app/index.tsx`, ex `SetupScreen` con testo dimostrativo "Setup completato") è stata sostituita da una vera Home (`HomeRoute`) con tre pulsanti (`Cerca impianti` → `/stations`, `Cerca prezzi carburante` → `/prices`, `Impianti vicini a me` → `/nearby`), senza tab bar/drawer: un semplice Stack con un'unica route home resta la shell più semplice che soddisfa il criterio "ogni punto di ingresso raggiungibile, nessuno isolato" senza fissare un'architettura dell'informazione definitiva. Test aggiunti/riscritti: `__tests__/app/HomeScreen.test.tsx` (ex `SetupScreen.test.tsx`), `__tests__/app/navigation-shell.test.tsx` (ex `stations-navigation.test.tsx`, esteso: Home → ciascuno dei tre punti di ingresso e ritorno, S01/S02/S04 → S03 con parametro `id_impianto` corretto e ritorno alla schermata di provenienza).
 
 ---
 

@@ -123,8 +123,12 @@ templates:
   stato per prop esplicita (`loading`/`empty`/`error`/`success`), mai dedotto
   implicitamente dai dati.
 - **templates** (`ListScreenTemplate`, `ScrollScreenTemplate`,
-  `ScreenTemplate`): compongono organism per una _forma_ di schermata,
-  riusata da più feature (`ListScreenTemplate` da S01, in futuro S02/S04).
+  `ScreenTemplate`): compongono organism per una _forma_ di schermata.
+  `ListScreenTemplate` (singolo campo di ricerca + `FunctionalList`) è usato
+  da S01; S02 (tre filtri indipendenti) e S04 (nessun filtro testuale, il
+  filtro è la posizione) compongono `ScreenTemplate` + `FunctionalList`
+  direttamente, senza forzare la stessa forma a un singolo campo di ricerca.
+  `ScrollScreenTemplate` è usato da S03 (contenuto più alto del viewport).
 
 Un componente viene promosso da `features` a `components` solo quando serve
 a ≥ 2 feature (regola oggettiva, evita di indovinare in anticipo cosa sarà
@@ -151,11 +155,12 @@ Stato reale delle vertical slice: vedi
 `src/services/motus` centralizza parsing JSON, timeout, cancellazione via
 `AbortSignal` e normalizzazione degli errori in una gerarchia tipizzata
 (`ApiError`: `ApiConfigError`, `ApiNetworkError`, `ApiTimeoutError`,
-`ApiAbortError`, `ApiHttpError`, `ApiInvalidResponseError`). Solo l'endpoint
-`stations.search` (`GET /api/stations`) ha oggi un modulo cliente
-implementato; gli altri endpoint verificati nel contratto
-(`stations.getById`, `stations.nearby`, `prices.search`) vengono aggiunti
-quando la rispettiva vertical slice viene implementata.
+`ApiAbortError`, `ApiHttpError`, `ApiInvalidResponseError`). Tutti e 4 gli
+endpoint applicativi verificati nel contratto hanno un modulo client:
+`stations.search` (`GET /api/stations`, S01), `stations.getById`
+(`GET /api/stations/{id}`, S03), `prices.search` (`GET /api/prices`, S02),
+`stations.nearby` (`GET /api/stations/nearby`, S04 — normalizza
+`total_available` in `total`, ADR-0001).
 
 ## Design system
 
@@ -223,19 +228,23 @@ prodotto/business prima di sbloccare lo stato:
 
 ## Limitazioni note
 
-- Solo S01 (ricerca impianti) è una vertical slice completa end-to-end. S03
-  (dettaglio impianto) è una shell UI senza hook dati reale (mostra
-  l'`id_impianto` ricevuto, non ancora i dati dell'impianto). S02 (ricerca
-  prezzi), S04 (impianti vicini) e la shell di navigazione tra i tre punti
-  di ingresso **non sono implementate**.
+- Le 4 vertical slice di schermata (S01 ricerca impianti, S02 ricerca prezzi,
+  S03 dettaglio impianto, S04 impianti vicini) sono complete end-to-end,
+  collegate tra loro da una Home (`src/app/index.tsx`) con 3 punti di
+  ingresso; tutte raggiungono S03.
 - Nessuna autenticazione, nessuna libreria di data-fetching/cache (ADR-0002),
   nessuno stato Zustand di business (`useAppStore`/`isAppReady` resta uno
-  store dimostrativo, ADR-0004), nessun dark mode attivato, nessuna
-  geolocalizzazione installata (richiesta solo da S04, non ancora
-  implementata).
+  store dimostrativo, ADR-0004), nessun dark mode attivato.
+- S04 richiede il permesso di posizione (`expo-location`, plugin configurato
+  in `app.json`) e i servizi di localizzazione attivi sul dispositivo;
+  permesso negato/servizi disattivati mostrano uno stato esplicito, non una
+  lista vuota indistinguibile da "nessun risultato". Testare il flusso di
+  permesso reale richiede una development build (`expo-dev-client`): Expo Go
+  non applica messaggi di permesso custom.
 - Nessun ambiente con toolchain nativa (Java/Android SDK, Xcode) è stato
   disponibile durante lo sviluppo per compilare o testare lo scaffolding
-  Android Auto, né per richiedere/verificare l'entitlement CarPlay.
+  Android Auto, né per richiedere/verificare l'entitlement CarPlay, né per
+  eseguire l'app su un simulatore/emulatore reale.
 - `pnpm web` è un ambiente di solo sviluppo, mai un target di prodotto.
 
 ## Test
