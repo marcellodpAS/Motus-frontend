@@ -4,3 +4,7 @@ coverage
 dist
 web-build
 pnpm-lock.yaml
+
+# Stitch design export (Task 19): preserved verbatim as provenance evidence
+# for docs/motus/stitch-screen-inventory.md — never reformatted.
+assets/stitch_motus/

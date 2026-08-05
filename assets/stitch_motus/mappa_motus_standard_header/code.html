@@ -1,0 +1,305 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Motus - Map</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#edf1f7",
+                      "on-secondary-container": "#fefcff",
+                      "secondary-container": "#1471e6",
+                      "on-primary-fixed": "#001a41",
+                      "on-error": "#ffffff",
+                      "surface": "#ffffff",
+                      "primary": "#005bbf",
+                      "background": "#f6faff",
+                      "on-tertiary-fixed": "#341100",
+                      "surface-tint": "#005bc0",
+                      "secondary-fixed-dim": "#adc7ff",
+                      "surface-dim": "#d6dae0",
+                      "surface-bright": "#f6faff",
+                      "on-surface": "#171c20",
+                      "inverse-surface": "#2c3135",
+                      "primary-fixed-dim": "#adc7ff",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#c55500",
+                      "tertiary": "#9e4300",
+                      "surface-variant": "#dee3e8",
+                      "semantic-error": "#d93025",
+                      "on-primary-fixed-variant": "#004493",
+                      "border-subtle": "#dadce0",
+                      "map-background": "#f8f9fa",
+                      "on-background": "#171c20",
+                      "secondary-fixed": "#d8e2ff",
+                      "surface-container": "#eaeef4",
+                      "on-secondary-fixed": "#001a41",
+                      "tertiary-fixed-dim": "#ffb691",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed": "#d8e2ff",
+                      "tertiary-fixed": "#ffdbcb",
+                      "outline": "#727785",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-fixed-variant": "#783100",
+                      "on-surface-variant": "#414754",
+                      "surface-container-lowest": "#ffffff",
+                      "semantic-success": "#188038",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed-variant": "#004493",
+                      "surface-container-highest": "#dee3e8",
+                      "on-tertiary-container": "#0e0200",
+                      "inverse-primary": "#adc7ff",
+                      "on-primary-container": "#ffffff",
+                      "scrim": "rgba(60, 64, 67, 0.30)",
+                      "secondary": "#0058bb",
+                      "primary-container": "#1a73e8",
+                      "error-container": "#ffdad6",
+                      "surface-container-low": "#f0f4fa",
+                      "surface-container-high": "#e4e9ee",
+                      "outline-variant": "#c1c6d6",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "component-padding-x": "16px",
+                      "unit": "4px",
+                      "component-padding-y": "10px",
+                      "gutter": "12px",
+                      "margin-desktop": "24px",
+                      "safe": "env(safe-area-inset-bottom)"
+              },
+              "fontFamily": {
+                      "label-sm": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "500"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dee3e8;
+            border-radius: 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background h-screen w-full overflow-hidden text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Main Map Canvas -->
+<main class="absolute inset-0 w-full h-full z-0">
+<div class="w-full h-full bg-map-background bg-cover bg-center" data-alt="A clean, highly legible digital map interface displaying street-level details of a modern European city in a light-mode aesthetic. The map utilizes a minimalist color palette with expansive pristine white areas, light grey streets, and very subtle, airy pastel blue tones for rivers and parks. It feels highly functional, uncluttered, and precise, matching a premium navigation software style." data-location="Berlin, Germany" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAmbzPLByHBck3Ly63EYM51Z-qFoF_lIi2QMKMpcjWGUVSh8_5wiJSQtCMAmHzR7ixpHEaVewKgwP_05p_WXbObciDo8xX69a-aydxLoSIcqogjbDsXHQA4IPbzfSnFj5Z9n20nBAD6nDGHFfr5UKfoODZ8MN7L_O_I3GV5FePsT15yC4ktIwUT3itj6RsGJrO6NccMRbCxFQ7Ym-IdvH9aTJLaBNyBdw8157dZsf_rzZZdDfz2N0x07g')"></div>
+<!-- Map Pins Overlay -->
+<div class="absolute inset-0 w-full h-full pointer-events-none">
+<!-- Pin: Normal -->
+<div class="absolute top-[25%] left-[20%] flex flex-col items-center pointer-events-auto hover:-translate-y-1 transition-transform cursor-pointer origin-bottom">
+<div class="bg-surface text-on-surface font-label-lg text-label-lg px-3 py-1.5 rounded-full shadow-[0px_1px_2px_rgba(60,64,67,0.3),0px_1px_3px_1px_rgba(60,64,67,0.15)] border border-border-subtle flex items-center gap-1">
+<span class="">1.88€</span>
+</div>
+<div class="w-2.5 h-2.5 bg-surface border-b border-r border-border-subtle transform rotate-45 -mt-1.5 shadow-[1px_1px_1px_rgba(60,64,67,0.1)]"></div>
+</div>
+<!-- Pin: Cheapest / Highlighted -->
+<div class="absolute top-[40%] left-[55%] flex flex-col items-center pointer-events-auto hover:-translate-y-1 transition-transform cursor-pointer origin-bottom z-10">
+<div class="bg-primary text-on-primary font-label-lg text-label-lg px-3 py-1.5 rounded-full shadow-[0px_1px_2px_rgba(60,64,67,0.3),0px_1px_3px_1px_rgba(60,64,67,0.15)] flex items-center gap-1 ring-2 ring-primary ring-offset-2 ring-offset-map-background">
+<span class="material-symbols-outlined text-[16px]">local_gas_station</span>
+<span class="font-bold">1.69€</span>
+</div>
+<div class="w-3 h-3 bg-primary transform rotate-45 -mt-1.5"></div>
+</div>
+<!-- Pin: Normal -->
+<div class="absolute top-[60%] left-[30%] flex flex-col items-center pointer-events-auto hover:-translate-y-1 transition-transform cursor-pointer origin-bottom">
+<div class="bg-surface text-on-surface font-label-lg text-label-lg px-3 py-1.5 rounded-full shadow-[0px_1px_2px_rgba(60,64,67,0.3),0px_1px_3px_1px_rgba(60,64,67,0.15)] border border-border-subtle flex items-center gap-1">
+<span class="">1.75€</span>
+</div>
+<div class="w-2.5 h-2.5 bg-surface border-b border-r border-border-subtle transform rotate-45 -mt-1.5 shadow-[1px_1px_1px_rgba(60,64,67,0.1)]"></div>
+</div>
+</div>
+</main>
+<!-- TopAppBar (Shared Component Implementation) -->
+<header class="fixed top-0 left-0 right-0 z-50 pointer-events-none md:ml-20">
+<div class="w-full bg-surface border-b border-border-subtle shadow-sm flex items-center justify-between px-4 py-2 pt-6 md:pt-2 pointer-events-auto">
+<button aria-label="Search" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-on-surface-variant">search</span></button>
+<div class="flex-1 flex justify-center">
+<img class="h-8 object-contain" data-alt="Motus Logo" src="https://lh3.googleusercontent.com/aida/AP1WRLu4Dy7pibBArcynoq1R4AxAPOIBrRxto046Kdv3BApwaMCf8LJxbYprugZllqpCtRkvCtwSaIT-1XfXp8vBDEJktcClGlSFs0AAC9DMJMN32JHc9MIHL1tXmUHPEGxllMS6OxD-XOr4wcFTua6AvDzBdjO0mb2Yt-QAuG592znwtz1go7VQ6DFB_8ORSl7O-omKdzmQtoyVa7jB8BqqDSmRHECWQU9CgCHcaPHps7uMtblWcf_bjzzDyR5r">
+</div>
+<button aria-label="Profile" class="w-9 h-9 rounded-full overflow-hidden border border-border-subtle hover:ring-2 ring-primary ring-offset-1 transition-all"><img class="w-full h-full object-cover" data-alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChfzAj4FuATzR_ksD09LZLCDfyc5os5n_eKlZT-6FEjrcBiHFgO_6gbMSVmtB_T_XAfPf8Tp8UAA-dsHsjsjZsfSVbftgAN4x3Y9klTADAMy0RyuY-1SDgQ_MJNS5yf6Y-j7Yta7QKiS7Y0fsaX7H0JRZosEdZZX1hyEnk6OFAoS_-WlUbateeFXlwGUi6LdhXFf7prmhrH5jCac_S6g1g8Zyx5gUoOLBAgclXiCnefVPBwDyfUr0lEQ"></button>
+</div>
+</header>
+<!-- Bottom Sheet (Cheapest Nearby) -->
+<div class="absolute bottom-[64px] md:bottom-margin-desktop left-0 right-0 z-40 md:w-[420px] md:left-margin-desktop flex flex-col pointer-events-none">
+<!-- Sheet Container -->
+<div class="bg-surface w-full rounded-t-xl md:rounded-xl shadow-[0px_-2px_12px_rgba(60,64,67,0.1)] border border-border-subtle border-b-0 md:border-b flex flex-col max-h-[442px] md:max-h-[530px] pointer-events-auto translate-y-0 transition-transform duration-300 ease-out">
+<!-- Drag Handle (Mobile only) -->
+<div class="w-full flex justify-center pt-3 pb-1 md:hidden cursor-grab">
+<div class="w-12 h-1.5 bg-outline-variant rounded-full opacity-50"></div>
+</div>
+<!-- Sheet Header -->
+<div class="px-component-padding-x py-4 flex items-center justify-between border-b border-border-subtle bg-surface/80 backdrop-blur-md rounded-t-xl z-10 sticky top-0">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">local_gas_station</span>
+                        Cheapest Nearby
+                    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Regular E10 • 5km radius</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors md:hidden">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- List Content -->
+<div class="flex-1 overflow-y-auto px-2 py-2 flex flex-col gap-2">
+<!-- List Item 1 (Highlighted) -->
+<div class="p-3 bg-surface-container-low border border-primary/20 flex items-center gap-4 hover:bg-surface-container transition-colors cursor-pointer group rounded-xl">
+<div class="w-12 h-12 rounded-lg bg-surface border border-border-subtle flex items-center justify-center shadow-sm">
+<img class="w-8 h-8 object-contain" data-alt="A minimalist, geometric logo for a generic modern fuel brand. It features sharp, clean lines and a subtle gradient of deep blue on a pure white background, mimicking a high-end corporate identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbztngZ34OWfVjrCN2psToTy06nfBRradTYrfTQEISTaaI6um9ZBdwgj9EK-Tnd-HNSkMj8JnZ2y6rW3iCSnZYsFqt9GuIDwSBlXvCvBt8rJdLvAQGAYk2EMf7j0OkTFYPpfXjoTLkgKLJ1aortCmoOG0P0e6AyCgcUEN-32tBpUvZ0HdxN8Th39f_k7gUPNS7dlEaUldY37VracqpmUcsFFEbKSW7_V1alSW8kIr0RZNDHqzJaEAf8A">
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">Motus Station</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">1.2 km • Open 24/7</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-lg text-headline-lg text-primary font-bold">1.69€</span>
+<button class="mt-1 flex items-center gap-1 font-label-md text-label-md text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                            Navigate <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="p-3 bg-surface border border-border-subtle flex items-center gap-4 hover:bg-surface-container-low transition-colors cursor-pointer group rounded-xl">
+<div class="w-12 h-12 rounded-lg bg-surface border border-border-subtle flex items-center justify-center shadow-sm">
+<img class="w-8 h-8 object-contain opacity-70" data-alt="A simple, abstract icon representing a secondary generic gas station brand. It uses soft grey and white tones with a singular circular motif, fitting perfectly into a clean, minimalist UI context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlHvX8pw3BBiG9RBkPUHt15tluXOpHrKioVxWcf9jbVRsg821QyWqKnJ1lbW-RwH8FNrtucg3jEEIWb4iLrWFdiAMz7ATxQWViDTK_-n2IGFeQ4ZV56ev-XpmHyLFMOMJ8t2xCxPcRRAXegd4qKAc_m6fjBpDOSk4Wp8bWFA7FQbov_zU0-THwt-BIRPLUxEImpK7OmS4KcQ75lSeM1ovBvtY2G0b8jQPKL0NNrybIXRlfmUSLpZ6GGg">
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">City Fuel</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">2.4 km • Closes at 22:00</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-lg text-headline-lg text-on-surface">1.75€</span>
+</div>
+</div>
+<!-- List Item 3 -->
+<div class="p-3 bg-surface border border-border-subtle flex items-center gap-4 hover:bg-surface-container-low transition-colors cursor-pointer group rounded-xl">
+<div class="w-12 h-12 rounded-lg bg-surface border border-border-subtle flex items-center justify-center shadow-sm">
+<img class="w-8 h-8 object-contain opacity-70" data-alt="A simple, abstract icon representing a generic gas station brand. It uses soft grey and white tones with a singular circular motif, fitting perfectly into a clean, minimalist UI context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFwRQ5g-0CszRqeNL9P_nufp7eL-iCP2jz197W8PNJho-faeHyeQ9VOVKga2elPvwnBTuZqy0QVOkFl1KiuoWc7xIk6mAjWd2HgkHMg-mwSc8lo0WPk0_KoLrlopBlPa2HZIZPT_JVOQvqhg2KvvqK7ezBBmBefvB5YmsBHQl1yqlC5BElI0ATH8qPRGdjtDTCeatPk_xptzdYPw7GPD5wQsTzJND0IqOzEphpUQO98xBckK6G54r9NA">
+</div>
+<div class="flex-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">Express Gas</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">3.8 km • Open 24/7</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-lg text-headline-lg text-on-surface">1.88€</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- BottomNavBar (Shared Component Implementation) -->
+<!-- Displayed on mobile, hidden on md+ -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center bg-surface border-t border-border-subtle pb-[env(safe-area-inset-bottom)] pt-2 px-4 md:hidden h-[64px] box-content">
+<!-- Active Nav Item: Map -->
+<a class="flex flex-col items-center justify-center text-primary font-medium w-16 active:opacity-80 transition-opacity" href="#">
+<div class="px-4 py-1 rounded-full bg-secondary-fixed/50 mb-1 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">map</span>
+</div>
+<span class="font-label-md text-label-md">Map</span>
+</a>
+<!-- Inactive Nav Item: Favorites -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:opacity-80 transition-opacity hover:bg-surface-container-low rounded-lg pt-1 pb-0.5" href="#">
+<span class="material-symbols-outlined mb-1">favorite</span>
+<span class="font-label-md text-label-md">Favorites</span>
+</a>
+<!-- Inactive Nav Item: Pro -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:opacity-80 transition-opacity hover:bg-surface-container-low rounded-lg pt-1 pb-0.5" href="#">
+<span class="material-symbols-outlined mb-1">workspace_premium</span>
+<span class="font-label-md text-label-md">Pro</span>
+</a>
+<!-- Inactive Nav Item: Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:opacity-80 transition-opacity hover:bg-surface-container-low rounded-lg pt-1 pb-0.5" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+<!-- Desktop Side Navigation Alternative (Hidden on mobile, represents standard layout pivot) -->
+<nav class="hidden md:flex fixed left-0 top-0 bottom-0 w-20 bg-surface border-r border-border-subtle flex-col items-center py-6 gap-8 z-40 shadow-[1px_0px_2px_rgba(60,64,67,0.1)]">
+<!-- Logo Area Placeholder -->
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-on-primary font-bold">directions_car</span>
+</div>
+<!-- Desktop Active Nav Item -->
+<a class="flex flex-col items-center justify-center text-primary font-medium w-16 group" href="#">
+<div class="w-12 h-12 rounded-xl bg-secondary-fixed/50 flex items-center justify-center group-hover:bg-secondary-fixed transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">map</span>
+</div>
+</a>
+<!-- Desktop Inactive Nav Items -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 group" href="#">
+<div class="w-12 h-12 rounded-xl flex items-center justify-center group-hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 group" href="#">
+<div class="w-12 h-12 rounded-xl flex items-center justify-center group-hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">workspace_premium</span>
+</div>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 group mt-auto" href="#">
+<div class="w-12 h-12 rounded-xl flex items-center justify-center group-hover:bg-surface-container-low transition-colors border border-border-subtle overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist user profile avatar showing a stylized, faceless silhouette in soft greys against a bright white background. It feels modern, corporate, and fits perfectly within a light-mode utilitarian interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwhGAYqgcrYkCd8sK0vOPJm7HvcPXfsly8aq4bkIDOcqFnfhGHr-5zgOn5oHoqMhDyXDXX0xseGrjEhFA9pDz2e5WG3UUOWcnpqrXCZ0W07QxeK3wFdOItJkuZmV1zEU2hgHkAaD4n6P_OmV11v6WNYXUAxUpaNXBRxsB2pBwrT3ZKA7KAVZlZRTTI8TYdkhSf8MotyIpYEmXHsgrZ38vZ-XvyZTWDC7IBIiPiKTqPO7sQ07419MeinA">
+</div>
+</a>
+</nav>
+</body></html>

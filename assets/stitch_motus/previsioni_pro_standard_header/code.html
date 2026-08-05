@@ -1,0 +1,264 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Motus - Pro Predictions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#edf1f7",
+                        "on-secondary-container": "#fefcff",
+                        "secondary-container": "#1471e6",
+                        "on-primary-fixed": "#001a41",
+                        "on-error": "#ffffff",
+                        "surface": "#ffffff",
+                        "primary": "#005bbf",
+                        "background": "#f6faff",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-tint": "#005bc0",
+                        "secondary-fixed-dim": "#adc7ff",
+                        "surface-dim": "#d6dae0",
+                        "surface-bright": "#f6faff",
+                        "on-surface": "#171c20",
+                        "inverse-surface": "#2c3135",
+                        "primary-fixed-dim": "#adc7ff",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#c55500",
+                        "tertiary": "#9e4300",
+                        "surface-variant": "#dee3e8",
+                        "semantic-error": "#d93025",
+                        "on-primary-fixed-variant": "#004493",
+                        "border-subtle": "#dadce0",
+                        "map-background": "#f8f9fa",
+                        "on-background": "#171c20",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-container": "#eaeef4",
+                        "on-secondary-fixed": "#001a41",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-fixed": "#ffdbcb",
+                        "outline": "#727785",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#783100",
+                        "on-surface-variant": "#414754",
+                        "surface-container-lowest": "#ffffff",
+                        "semantic-success": "#188038",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#004493",
+                        "surface-container-highest": "#dee3e8",
+                        "on-tertiary-container": "#0e0200",
+                        "inverse-primary": "#adc7ff",
+                        "on-primary-container": "#ffffff",
+                        "scrim": "rgba(60, 64, 67, 0.30)",
+                        "secondary": "#0058bb",
+                        "primary-container": "#1a73e8",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f0f4fa",
+                        "surface-container-high": "#e4e9ee",
+                        "outline-variant": "#c1c6d6",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "component-padding-x": "16px",
+                        "unit": "4px",
+                        "component-padding-y": "10px",
+                        "gutter": "12px",
+                        "margin-desktop": "24px",
+                        "safe-bottom": "env(safe-area-inset-bottom)"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["11px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "500" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col relative">
+<!-- TopAppBar from JSON -->
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center gap-3 px-4 py-3 bg-surface border-b border-border-subtle"><div class="flex items-center gap-2 flex-1"><div class="w-8 h-8 shrink-0 overflow-hidden rounded-md"><img alt="Motus Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLu4Dy7pibBArcynoq1R4AxAPOIBrRxto046Kdv3BApwaMCf8LJxbYprugZllqpCtRkvCtwSaIT-1XfXp8vBDEJktcClGlSFs0AAC9DMJMN32JHc9MIHL1tXmUHPEGxllMS6OxD-XOr4wcFTua6AvDzBdjO0mb2Yt-QAuG592znwtz1go7VQ6DFB_8ORSl7O-omKdzmQtoyVa7jB8BqqDSmRHECWQU9CgCHcaPHps7uMtblWcf_bjzzDyR5r"></div><div class="flex-1 flex items-center gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-outline">search</span><span class="font-body-lg text-body-lg">Search for gas stations...</span></div></div><button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors active:scale-95 overflow-hidden border border-border-subtle shrink-0"><img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVGrUsiVuYACTobParQlJiijXODMrGqguMVtL07xptDx58ihR77M6qDw2JN_pLKFgcoikjiVltLvaSGdyJveN_3e0JrHRChnl6Dk0BAO1-eXihCkug53KLHWy4S25V5G-ZO_Qg6_PJHyIYT4iVDUOG9KeuZNyBn4xm6uoUDWoX_-XNbpEBVkG9SvnIXxopoQeQVmlGbTSA1T5mpdh0FCUK3U8d1RCmyUJYL02bD0HMU2ItZjOOgbhc9w"></button></header>
+<!-- Main Scrollable Canvas -->
+<main class="flex-1 w-full max-w-screen-md mx-auto pt-[80px] pb-[90px] px-margin-mobile flex flex-col gap-gutter">
+<!-- Header Text -->
+<div class="pt-4 pb-2 px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">insights</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Predictive Analysis</h1>
+</div>
+<!-- Primary Recommendation Card -->
+<section class="bg-surface rounded-2xl border border-border-subtle p-5 flex flex-col gap-4 shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 right-0 h-1 bg-primary-container"></div><div class="flex justify-between items-start"><div class="flex flex-col gap-1"><span class="font-label-lg text-label-lg text-primary-container uppercase tracking-wider font-semibold">Recommendation</span><h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">Wait to Fuel Up</h2></div><div class="bg-surface-container-low rounded-full w-12 h-12 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-primary-container text-[28px]" style="font-variation-settings: 'FILL' 1;">trending_down</span></div></div><div class="flex flex-col gap-0.5"><p class="font-body-lg text-body-lg text-on-surface-variant">Prices are expected to drop by Friday.</p><div class="flex items-baseline gap-2 mt-2"><span class="font-display-lg text-display-lg text-on-surface">-$0.12</span><span class="font-body-md text-body-md text-on-surface-variant">/ gallon</span></div></div><div class="mt-2 bg-inverse-on-surface rounded-xl p-3 flex items-center gap-3"><span class="material-symbols-outlined text-semantic-success" style="font-variation-settings: 'FILL' 1;">savings</span><span class="font-body-md text-body-md text-on-surface">Estimated savings on a full tank: <strong class="font-semibold text-semantic-success">~$1.80</strong></span></div></section>
+<!-- Secondary Trend Chart Card -->
+<section class="bg-surface border border-border-subtle p-5 flex flex-col gap-4 rounded-2xl">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">7-Day Local Trend</h3>
+<span class="font-label-md text-label-md bg-surface-container px-2 py-1 rounded-md text-on-surface-variant">Regular Unleaded</span>
+</div>
+<!-- Minimalist Chart Visualization -->
+<div class="h-32 w-full mt-2 relative flex items-end">
+<!-- Y-Axis labels approx -->
+<div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-outline font-label-sm pb-6">
+<span class="">$3.60</span>
+<span class="">$3.50</span>
+<span class="">$3.40</span>
+</div>
+<!-- Chart Area -->
+<div class="ml-10 flex-1 h-full relative">
+<!-- Grid lines -->
+<div class="absolute inset-0 flex flex-col justify-between pb-6">
+<div class="w-full border-t border-dashed border-surface-variant"></div>
+<div class="w-full border-t border-dashed border-surface-variant"></div>
+<div class="w-full border-t border-solid border-border-subtle"></div>
+</div>
+<!-- SVG Line -->
+<svg class="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
+<path d="M 0,20 Q 20,25 40,50 T 80,80 L 100,85" fill="none" stroke="#1a73e8" stroke-linecap="round" stroke-width="3"></path>
+<circle cx="0" cy="20" fill="#1a73e8" r="3"></circle>
+<circle cx="100" cy="85" fill="#ffffff" r="4" stroke="#1a73e8" stroke-width="2"></circle>
+</svg>
+<!-- X-Axis labels -->
+<div class="absolute bottom-0 left-0 right-0 flex justify-between text-[10px] text-outline font-label-sm px-1">
+<span class="">Mon</span>
+<span class="">Wed</span>
+<span class="">Fri (Est)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Predicted Stations List -->
+<section class="flex flex-col gap-3 mt-2">
+<h3 class="font-headline-md text-headline-md text-on-surface px-2">Best Predicted Stations</h3>
+<div class="bg-surface border border-border-subtle overflow-hidden flex flex-col rounded-2xl">
+<!-- List Item 1 -->
+<div class="flex items-center p-4 border-b border-surface-variant active:bg-surface-container-low transition-colors">
+<div class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center font-bold text-lg shrink-0">
+                        S
+                    </div>
+<div class="ml-3 flex-1">
+<h4 class="font-label-lg text-label-lg text-on-surface">Speedway</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+<span class="">1.2 mi</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="">Main St</span>
+</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">$3.42</span>
+<span class="font-label-sm text-label-sm text-semantic-success flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+                            Exp. Fri
+                        </span>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="flex items-center p-4 border-b border-surface-variant active:bg-surface-container-low transition-colors">
+<div class="w-10 h-10 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold text-lg shrink-0">
+                        Q
+                    </div>
+<div class="ml-3 flex-1">
+<h4 class="font-label-lg text-label-lg text-on-surface">QuikTrip</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+<span class="">2.4 mi</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="">Oak Rd</span>
+</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">$3.45</span>
+<span class="font-label-sm text-label-sm text-semantic-success flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+                            Exp. Sat
+                        </span>
+</div>
+</div>
+<!-- List Item 3 -->
+<div class="flex items-center p-4 active:bg-surface-container-low transition-colors">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-lg shrink-0">
+                        C
+                    </div>
+<div class="ml-3 flex-1">
+<h4 class="font-label-lg text-label-lg text-on-surface">Costco Gas</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
+<span class="">4.1 mi</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="">Members Only</span>
+</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">$3.29</span>
+<span class="font-label-sm text-label-sm text-outline">Stable</span>
+</div>
+</div>
+</div>
+<button class="mt-2 w-full py-3 border border-border-subtle text-primary font-label-lg text-label-lg font-semibold hover:bg-surface-container-low transition-colors rounded-2xl">
+                View all on Map
+            </button>
+</section>
+</main>
+<!-- BottomNavBar from JSON -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center bg-surface pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2 px-4 border-t border-border-subtle">
+<!-- Map (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors active:opacity-80 p-2 min-w-[64px] rounded-2xl">
+<span class="material-symbols-outlined mb-1">map</span>
+<span class="font-label-md text-label-md">Map</span>
+</button>
+<!-- Favorites (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors active:opacity-80 p-2 min-w-[64px] rounded-2xl">
+<span class="material-symbols-outlined mb-1">favorite</span>
+<span class="font-label-md text-label-md">Favorites</span>
+</button>
+<!-- Pro (Active) -->
+<button class="flex flex-col items-center justify-center text-primary font-medium hover:bg-surface-container-low transition-colors active:opacity-80 p-2 min-w-[64px] rounded-2xl">
+<div class="bg-primary-container/20 px-4 py-1 rounded-full mb-1 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<span class="font-label-md text-label-md">Pro</span>
+</button>
+<!-- Profile (Inactive) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors active:opacity-80 p-2 min-w-[64px] rounded-2xl">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</button>
+</nav>
+</body></html>

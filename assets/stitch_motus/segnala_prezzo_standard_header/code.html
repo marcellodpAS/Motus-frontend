@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Report Prices - Motus</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-on-surface": "#edf1f7",
+                      "on-secondary-container": "#fefcff",
+                      "secondary-container": "#1471e6",
+                      "on-primary-fixed": "#001a41",
+                      "on-error": "#ffffff",
+                      "surface": "#ffffff",
+                      "primary": "#005bbf",
+                      "background": "#f6faff",
+                      "on-tertiary-fixed": "#341100",
+                      "surface-tint": "#005bc0",
+                      "secondary-fixed-dim": "#adc7ff",
+                      "surface-dim": "#d6dae0",
+                      "surface-bright": "#f6faff",
+                      "on-surface": "#171c20",
+                      "inverse-surface": "#2c3135",
+                      "primary-fixed-dim": "#adc7ff",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#c55500",
+                      "tertiary": "#9e4300",
+                      "surface-variant": "#dee3e8",
+                      "semantic-error": "#d93025",
+                      "on-primary-fixed-variant": "#004493",
+                      "border-subtle": "#dadce0",
+                      "map-background": "#f8f9fa",
+                      "on-background": "#171c20",
+                      "secondary-fixed": "#d8e2ff",
+                      "surface-container": "#eaeef4",
+                      "on-secondary-fixed": "#001a41",
+                      "tertiary-fixed-dim": "#ffb691",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed": "#d8e2ff",
+                      "tertiary-fixed": "#ffdbcb",
+                      "outline": "#727785",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-fixed-variant": "#783100",
+                      "on-surface-variant": "#414754",
+                      "surface-container-lowest": "#ffffff",
+                      "semantic-success": "#188038",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed-variant": "#004493",
+                      "surface-container-highest": "#dee3e8",
+                      "on-tertiary-container": "#0e0200",
+                      "inverse-primary": "#adc7ff",
+                      "on-primary-container": "#ffffff",
+                      "scrim": "rgba(60, 64, 67, 0.30)",
+                      "secondary": "#0058bb",
+                      "primary-container": "#1a73e8",
+                      "error-container": "#ffdad6",
+                      "surface-container-low": "#f0f4fa",
+                      "surface-container-high": "#e4e9ee",
+                      "outline-variant": "#c1c6d6",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "component-padding-x": "16px",
+                      "unit": "4px",
+                      "component-padding-y": "10px",
+                      "gutter": "12px",
+                      "margin-desktop": "24px"
+              },
+              "fontFamily": {
+                      "label-sm": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-sm": ["11px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "500"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "500"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col pt-20 pb-24 md:pt-24 md:pb-0">
+<!-- TopAppBar (Transactional - Hidden or Simplified) -->
+<!-- Since this is a transactional "Report Prices" screen, we'll keep a simplified top bar with a back button -->
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-surface border-b border-border-subtle shadow-sm w-full"><div class="flex items-center gap-4 flex-grow"><button aria-label="Back" class="p-2 rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant"><span class="material-symbols-outlined">arrow_back</span></button><div class="h-8 w-auto shrink-0"><img alt="Motus Logo" class="h-full w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLu4Dy7pibBArcynoq1R4AxAPOIBrRxto046Kdv3BApwaMCf8LJxbYprugZllqpCtRkvCtwSaIT-1XfXp8vBDEJktcClGlSFs0AAC9DMJMN32JHc9MIHL1tXmUHPEGxllMS6OxD-XOr4wcFTua6AvDzBdjO0mb2Yt-QAuG592znwtz1go7VQ6DFB_8ORSl7O-omKdzmQtoyVa7jB8BqqDSmRHECWQU9CgCHcaPHps7uMtblWcf_bjzzDyR5r"></div><span class="text-on-surface-variant font-body-md">Segnala Prezzo</span></div><div class="flex items-center gap-2"><button aria-label="Search" class="p-2 rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant"><span class="material-symbols-outlined">search</span></button><button aria-label="User Profile" class="w-8 h-8 rounded-full overflow-hidden border border-border-subtle bg-surface-container-low flex items-center justify-center hover:opacity-80 transition-opacity"><span class="material-symbols-outlined text-on-surface-variant">person</span></button></div></header>
+<main class="flex-grow px-margin-mobile md:px-margin-desktop max-w-screen-md mx-auto w-full flex flex-col gap-6">
+<!-- Station Info Context -->
+<section class="bg-surface p-4 shadow-[0px_1px_2px_rgba(60,64,67,0.3),0px_1px_3px_1px_rgba(60,64,67,0.15)] flex items-center gap-4 border border-border-subtle rounded-2xl">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary">local_gas_station</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Shell Station</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">123 Main Street</p>
+</div>
+</section>
+<!-- Form Section -->
+<form class="flex flex-col gap-6 bg-surface p-6 shadow-[0px_1px_2px_rgba(60,64,67,0.3),0px_1px_3px_1px_rgba(60,64,67,0.15)] border border-border-subtle rounded-2xl" onsubmit="event.preventDefault();">
+<div class="flex flex-col gap-2">
+<label class="font-label-lg text-label-lg text-on-surface" for="petrol-price">Petrol 95</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 font-headline-lg text-headline-lg text-on-surface-variant">$</span>
+<input class="w-full h-16 pl-10 pr-4 border border-border-subtle bg-surface focus:border-primary focus:ring-2 focus:ring-primary-container font-headline-lg text-headline-lg text-on-surface outline-none transition-all rounded-2xl" id="petrol-price" placeholder="1.85" step="0.01" type="number">
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-lg text-label-lg text-on-surface" for="diesel-price">Diesel</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 font-headline-lg text-headline-lg text-on-surface-variant">$</span>
+<input class="w-full h-16 pl-10 pr-4 border border-border-subtle bg-surface focus:border-primary focus:ring-2 focus:ring-primary-container font-headline-lg text-headline-lg text-on-surface outline-none transition-all rounded-2xl" id="diesel-price" placeholder="1.92" step="0.01" type="number">
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-lg text-label-lg text-on-surface" for="lpg-price">LPG</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 font-headline-lg text-headline-lg text-on-surface-variant">$</span>
+<input class="w-full h-16 pl-10 pr-4 border border-border-subtle bg-surface focus:border-primary focus:ring-2 focus:ring-primary-container font-headline-lg text-headline-lg text-on-surface outline-none transition-all rounded-2xl" id="lpg-price" placeholder="0.85" step="0.01" type="number">
+</div>
+</div>
+<hr class="border-border-subtle my-2">
+<!-- Toggle -->
+<div class="flex items-center justify-between py-2">
+<div>
+<h3 class="font-label-lg text-label-lg text-on-surface">Price Mismatch</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Report significant discrepancies</p>
+</div>
+<button aria-checked="false" class="relative inline-flex h-6 w-11 items-center rounded-full bg-surface-variant transition-colors" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked') === 'true' ? 'false' : 'true'); this.classList.toggle('bg-primary'); this.classList.toggle('bg-surface-variant'); this.querySelector('span').classList.toggle('translate-x-6'); this.querySelector('span').classList.toggle('translate-x-1');" role="switch" type="button">
+<span class="inline-block h-4 w-4 transform rounded-full bg-surface transition-transform translate-x-1"></span>
+</button>
+</div>
+<button class="mt-4 w-full h-14 bg-primary text-on-primary font-label-lg text-label-lg rounded-full flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-[0px_1px_2px_rgba(60,64,67,0.3),0px_1px_3px_1px_rgba(60,64,67,0.15)] active:scale-95" type="submit">
+<span class="material-symbols-outlined">send</span>
+                Submit Report
+            </button>
+</form>
+</main>
+<!-- Navigation Shell suppressed because this is a transactional screen -->
+</body></html>
