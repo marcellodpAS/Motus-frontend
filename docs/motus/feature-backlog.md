@@ -54,7 +54,7 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 
 ---
 
-## VS2 — Ricerca impianti (S01)
+## VS2 — Ricerca impianti (S01) — ✅ Completata (Task 13, 2026-08-05)
 
 **Scopo**: permettere all'utente di cercare impianti per comune, provincia o testo libero, e vederne l'elenco con i relativi prezzi (UC2).
 
@@ -78,6 +78,8 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 **Dipendenze**: 🧱 VS0, VS1. 🔗 naviga a S03 (VS3) — il collegamento reale si completa quando VS3 esiste, ma VS2 è sviluppabile e verificabile prima (con un placeholder di navigazione).
 
 **Criterio di completamento**: dall'avvio dell'app (anche senza shell di navigazione, via singola route) è possibile cercare impianti e vedere risultati reali o gli stati alternativi coperti dai test; `pnpm validate` verde.
+
+**Note di implementazione (Task 13)**: implementato `useStationsSearch` (`src/features/stations-search/useStationsSearch.ts`) — hook dati che possiede filtri, stato di richiesta (`loading`/`success`/`error`), paginazione a offset (stop quando `offset + data.length >= pagination.total`, verificato via test) e retry dell'ultima richiesta effettivamente fallita (non un reset a offset 0). `StationsSearchScreen` (già esistente come shell dal Task 12) ora è cablata all'hook: singolo campo di ricerca mappato su `q` (copre comune/provincia/testo libero, dato che il server applica `LIKE` su tutti e tre — vedi `user-flows.md` Flusso 1), riga risultato con fallback `nome_impianto -> bandiera -> id_impianto` e prezzo minimo da `prices[]` (assente se `prices: []`), selezione riga naviga a `/stations/[id]`. Nessun nuovo componente condiviso introdotto: riuso completo di `ListScreenTemplate`/`FunctionalList`/`ListItem`/`AppText` (§ `mcp-design-log.md` §7). Test aggiunti: `__tests__/features/useStationsSearch.test.ts` (chiamata iniziale, combinazioni di filtro, stop di paginazione, esito vuoto, errore + retry), `__tests__/features/StationsSearchScreen.test.tsx` (popolato con `nome_impianto`/`prices` vuoti, vuoto, errore server, errore 400, testo digitato, navigazione a S03); `__tests__/app/stations-navigation.test.tsx` aggiornato per mockare il servizio invece di affidarsi a `EXPO_PUBLIC_API_URL` assente (nessuna chiamata di rete reale in nessun test, `testing-strategy.md` §2). `pnpm validate` (lint, format:check, typecheck, test --runInBand) verde. Verifica manuale su simulatore iOS/Android non eseguita in questa sessione (nessun simulatore/dispositivo disponibile nell'ambiente di esecuzione) — da fare come attività di QA manuale separata prima del rilascio.
 
 ---
 
@@ -194,4 +196,4 @@ VS2, VS3, VS4, VS5 non dipendono tecnicamente l'una dall'altra (solo da VS0/VS1)
 
 ## Fuori da questo backlog
 
-Automotive, dark mode definitivo, offline/cache persistente e autenticazione **non hanno una vertical slice**: dipendono da decisioni di prodotto/design non ancora prese (vedi `implementation-plan.md`, "Fasi non pianificate in questo task", e `open-questions.md`).
+Automotive (integrazione nativa), dark mode definitivo, offline/cache persistente e autenticazione **non hanno una vertical slice**: dipendono da decisioni di prodotto/design non ancora prese (vedi `implementation-plan.md`, "Fasi non pianificate in questo task", e `open-questions.md`). Il modello condiviso automotive (tipi, mapping, comandi, adapter senza SDK) è invece stato costruito fuori da questo backlog di vertical slice, come Task 14 dedicato — vedi `docs/motus/automotive-shared-model.md`.

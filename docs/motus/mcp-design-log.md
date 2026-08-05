@@ -84,3 +84,14 @@ I tre file "di produzione" non sono stati caricati su `DesignSync` perché sono 
 ## 6. Verifica di leggibilità (riferimento)
 
 Eseguita localmente con `rsvg-convert` a 16/24/32/48/64px e ispezione visiva diretta di ogni export — dettaglio e soglia raccomandata in `docs/motus/brand-guidelines.md`, §7. Non è stata delegata a `DesignSync`, che non offre alcuna funzione di verifica visiva o rendering a più risoluzioni.
+
+## 7. Task 13 — VS2 (Ricerca impianti, S01)
+
+Operazioni reali eseguite in questa sessione (2026-08-05) prima di implementare VS2, per verificare se esistesse già — o fosse necessario produrre — un design specifico per S01 su `DesignSync`.
+
+| #   | Metodo          | Parametri chiave                                  | Esito reale                                                                                         |
+| --- | --------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| 1   | `list_projects` | —                                                 | Un solo progetto: `Motus` (`projectId: cde3c6bc-4c82-4852-97c4-8f5f5c7c88f5`), invariato dal Task 9 |
+| 2   | `list_files`    | `projectId: cde3c6bc-4c82-4852-97c4-8f5f5c7c88f5` | Stessi 22 path del Task 9 (§3) — nessun file relativo a S01 o a un nuovo componente condiviso       |
+
+**Conclusione, motivata**: `DesignSync` resta, come già accertato in `mcp-audit.md` e riconfermato al §4 sopra, uno strumento di sincronizzazione file verso un progetto design-system (asset grafici, preview di componenti) — non un editor di schermate (nessun concetto nativo di "schermata"/frame/canvas). VS2 non ha introdotto alcun nuovo componente condiviso in `src/components` (atoms/molecules/organisms/templates): la schermata S01 riusa integralmente `ListScreenTemplate`, `FunctionalList`, `ListItem`, `AppText` già esistenti (Task 10-12), aggiungendo solo l'hook dati `useStationsSearch` e la logica di mapping `Station -> riga`, entrambi privi di superficie visiva nuova da sincronizzare. Nessuna scrittura (`finalize_plan`/`write_files`) è stata quindi eseguita per questo task: non c'era nulla di nuovo da progettare o registrare, coerentemente con il vincolo "aggiungi componenti condivisi solo quando esiste una reale possibilità di riuso" (Task 13).
