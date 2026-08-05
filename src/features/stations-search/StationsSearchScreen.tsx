@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 
 import { AppText } from "@/components/atoms/AppText";
+import { HeaderIconButton } from "@/components/molecules/HeaderIconButton";
 import { ListItem } from "@/components/molecules/ListItem";
 import { ListScreenTemplate } from "@/components/templates/ListScreenTemplate";
 import type { FunctionalListStatus } from "@/components/organisms/FunctionalList";
@@ -24,6 +25,15 @@ export function StationsSearchScreen() {
   return (
     <ListScreenTemplate<Station>
       title="Impianti"
+      onBack={() => router.back()}
+      headerRight={
+        <HeaderIconButton
+          icon="price-change"
+          accessibilityLabel="Cerca prezzi carburante"
+          onPress={() => router.push("/prices")}
+          color="primary"
+        />
+      }
       searchValue={filters.q ?? ""}
       onSearchChange={(text) => setFilters({ q: text || undefined })}
       searchPlaceholder="Cerca per comune, provincia..."

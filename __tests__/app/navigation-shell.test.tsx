@@ -111,7 +111,16 @@ function grantedPermission() {
   };
 }
 
-describe("navigation shell (VS6: Home -> S01/S02/S04 -> S03 -> back)", () => {
+function deniedPermission() {
+  return {
+    status: Location.PermissionStatus.DENIED,
+    granted: false,
+    canAskAgain: true,
+    expires: "never" as const,
+  };
+}
+
+describe("navigation shell (Task 19: tab bar -> S01/S02/S03/S04/report, and back)", () => {
   beforeEach(() => {
     searchStationsMock.mockReset();
     searchStationsMock.mockResolvedValue({
@@ -126,21 +135,51 @@ describe("navigation shell (VS6: Home -> S01/S02/S04 -> S03 -> back)", () => {
     getCurrentPositionAsyncMock.mockReset();
   });
 
-  it("reaches S01 from the home button and renders it directly at /stations", async () => {
+  it("renders the Map tab at / by default, with the Favorites/Pro/Profile tabs reachable", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(deniedPermission());
+
     const testInstance = renderRouter("src/app", { initialUrl: "/" });
     const view = await testInstance;
 
-    await fireEvent.press(view.getByText("Cerca impianti"));
+    expect(testInstance.getPathname()).toBe("/");
+    // Permission denied -> ErrorState is rendered instead of the map itself.
+    expect(await view.findByText(/Permesso di posizione negato/)).toBeTruthy();
+
+    await fireEvent.press(view.getByLabelText(/^Favorites, tab/));
+    expect(testInstance.getPathname()).toBe("/favorites");
+
+    await fireEvent.press(view.getByLabelText(/^Pro, tab/));
+    expect(testInstance.getPathname()).toBe("/pro");
+    expect(
+      await view.findByText("Previsioni non ancora disponibili"),
+    ).toBeTruthy();
+
+    await fireEvent.press(view.getByLabelText(/^Profile, tab/));
+    expect(testInstance.getPathname()).toBe("/profile");
+    expect(await view.findByText("Profilo non disponibile")).toBeTruthy();
+  });
+
+  it("reaches S01 from the Map header search icon, and back navigates to the tab shell", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(deniedPermission());
+
+    const testInstance = renderRouter("src/app", { initialUrl: "/" });
+    const view = await testInstance;
+    await view.findByText(/Permesso di posizione negato/);
+
+    await fireEvent.press(view.getByLabelText("Cerca impianti"));
 
     expect(testInstance.getPathname()).toBe("/stations");
     expect(view.getByRole("header", { name: "Impianti" })).toBeTruthy();
+
+    await fireEvent.press(view.getByLabelText("Indietro"));
+    expect(testInstance.getPathname()).toBe("/");
   });
 
-  it("reaches S02 from the home button and back navigates to home", async () => {
-    const testInstance = renderRouter("src/app", { initialUrl: "/" });
+  it("reaches S02 from S01's header action and back navigates to S01", async () => {
+    const testInstance = renderRouter("src/app", { initialUrl: "/stations" });
     const view = await testInstance;
 
-    await fireEvent.press(view.getByText("Cerca prezzi carburante"));
+    await fireEvent.press(view.getByLabelText("Cerca prezzi carburante"));
 
     expect(testInstance.getPathname()).toBe("/prices");
     expect(
@@ -148,27 +187,7 @@ describe("navigation shell (VS6: Home -> S01/S02/S04 -> S03 -> back)", () => {
     ).toBeTruthy();
 
     await fireEvent.press(view.getByLabelText("Indietro"));
-    expect(testInstance.getPathname()).toBe("/");
-  });
-
-  it("reaches S04 from the home button and back navigates to home", async () => {
-    requestForegroundPermissionsAsyncMock.mockResolvedValue({
-      status: Location.PermissionStatus.DENIED,
-      granted: false,
-      canAskAgain: true,
-      expires: "never",
-    });
-
-    const testInstance = renderRouter("src/app", { initialUrl: "/" });
-    const view = await testInstance;
-
-    await fireEvent.press(view.getByText("Impianti vicini a me"));
-
-    expect(testInstance.getPathname()).toBe("/nearby");
-    expect(view.getByRole("header", { name: "Impianti vicini" })).toBeTruthy();
-
-    await fireEvent.press(view.getByLabelText("Indietro"));
-    expect(testInstance.getPathname()).toBe("/");
+    expect(testInstance.getPathname()).toBe("/stations");
   });
 
   it("navigates from the S01 list to the S03 detail route with the id_impianto param, then back", async () => {
@@ -189,7 +208,7 @@ describe("navigation shell (VS6: Home -> S01/S02/S04 -> S03 -> back)", () => {
       await view.findByRole("header", { name: "Dettaglio impianto" }),
     ).toBeTruthy();
     expect(testInstance.getSearchParams()).toEqual({ id: "57660" });
-    expect(await view.findByText("Agip Eni")).toBeTruthy();
+    expect(await view.findByText("Impianto Test")).toBeTruthy();
 
     await fireEvent.press(view.getByLabelText("Indietro"));
 
@@ -257,5 +276,84 @@ describe("navigation shell (VS6: Home -> S01/S02/S04 -> S03 -> back)", () => {
     expect(
       await view.findByRole("header", { name: "Dettaglio impianto" }),
     ).toBeTruthy();
+  });
+
+  it("reaches the Map tab's pins/bottom sheet when nearby stations are found, and can jump to the S04 list view", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(
+      grantedPermission(),
+    );
+    hasServicesEnabledAsyncMock.mockResolvedValue(true);
+    getCurrentPositionAsyncMock.mockResolvedValue({
+      coords: {
+        latitude: 41.9028,
+        longitude: 12.4964,
+        altitude: null,
+        accuracy: 5,
+        altitudeAccuracy: null,
+        heading: null,
+        speed: null,
+      },
+      timestamp: 1_754_000_000_000,
+    });
+    nearbyMock.mockResolvedValue({
+      origin: { lat: 41.9028, lon: 12.4964 },
+      data: [
+        {
+          ...nearbyStationFixture(),
+          nome_impianto: "Impianto Test",
+          prices: [
+            {
+              id_impianto: 57660,
+              carburante: "Benzina",
+              prezzo: 1.699,
+              self_service: 1,
+              data_comunicazione: null,
+              updated_at: "2026-08-04T06:30:00.377849+00:00",
+            },
+          ],
+        },
+      ],
+      pagination: { limit: 20, offset: 0, total: 1 },
+    });
+
+    const testInstance = renderRouter("src/app", { initialUrl: "/" });
+    const view = await testInstance;
+
+    expect(await view.findByText("Impianti più vicini")).toBeTruthy();
+    expect(await view.findByText("Impianto Test")).toBeTruthy();
+
+    await fireEvent.press(view.getByLabelText("Vedi come elenco"));
+    expect(testInstance.getPathname()).toBe("/nearby");
+  });
+
+  it("reaches Segnala Prezzo from the S03 action row, with the station context and a not-available submit outcome", async () => {
+    getByIdMock.mockResolvedValue({
+      station: stationSummaryFixture(),
+      prices: [],
+    });
+
+    const testInstance = renderRouter("src/app", {
+      initialUrl: "/stations/57660",
+    });
+    const view = await testInstance;
+    await view.findByText("Impianto Test");
+
+    await fireEvent.press(view.getByLabelText("Segnala prezzo"));
+
+    expect(testInstance.getPathname()).toBe("/stations/57660/report");
+    expect(
+      await view.findByRole("header", { name: "Segnala Prezzo" }),
+    ).toBeTruthy();
+    expect(await view.findAllByText("Impianto Test")).toBeTruthy();
+
+    await fireEvent.changeText(view.getByLabelText("Benzina"), "1.85");
+    await fireEvent.press(view.getByText("Invia segnalazione"));
+
+    expect(
+      await view.findByText("Invio non disponibile in questa versione"),
+    ).toBeTruthy();
+
+    await fireEvent.press(view.getByLabelText("Indietro"));
+    expect(testInstance.getPathname()).toBe("/stations/57660");
   });
 });
