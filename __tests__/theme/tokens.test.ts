@@ -52,14 +52,17 @@ describe("colors — semantic API", () => {
 });
 
 describe("typography — composed from the atomic scales, not duplicated", () => {
-  it("keeps body/title numerically identical to the previous provisional tokens", () => {
+  it("keeps body numerically identical to the previous provisional tokens (Stitch body-lg matches exactly)", () => {
     expect(typography.body).toEqual([
       "16px",
       { lineHeight: "24px", fontWeight: "400" },
     ]);
+  });
+
+  it("title matches Stitch's headline-lg (Task 19 — replaces the provisional value)", () => {
     expect(typography.title).toEqual([
       "24px",
-      { lineHeight: "32px", fontWeight: "600" },
+      { lineHeight: "32px", fontWeight: "500" },
     ]);
   });
 

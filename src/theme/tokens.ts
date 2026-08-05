@@ -1,5 +1,5 @@
 /**
- * Single source of truth for Motus design tokens (Task 10).
+ * Single source of truth for Motus design tokens.
  *
  * Consumed by three surfaces, all reading from this exact module — no value
  * below is ever retyped elsewhere:
@@ -14,32 +14,74 @@
  * Tailwind build. Platform-dependent helpers live in `./shadowStyle.ts`
  * instead, which only app/test code imports.
  *
- * Previously `tokens.js` (runtime) duplicated its own shape by hand in a
- * parallel `tokens.d.ts` (flagged as debt in `docs/motus/architecture.md`
- * §4). A single typed `.ts` module removes that duplication outright.
+ * Task 19: values below are derived from the real Motus Stitch project
+ * (`assets/stitch_motus.zip`, catalogued in
+ * `docs/motus/stitch-screen-inventory.md` §0), replacing the provisional
+ * placeholder palette this file previously carried (flagged in the old
+ * `tokens.js` as "temporary, replace after the Stitch design analysis" —
+ * see `docs/motus/design-inputs.md` §2). The four exported `code.html`
+ * files (Segnala Prezzo, Dettaglio Stazione, Previsioni Pro, Mappa Motus)
+ * are the primary source for exact hex values — they are internally
+ * consistent with each other and closer to the actual rendered screens
+ * than `DESIGN.md`, which uses slightly different numbers for the same
+ * token names (documented discrepancy, `stitch-screen-inventory.md` §0).
  */
 
 /**
- * Primitive color scale. Intentionally not exposed to Tailwind: components
- * must consume the semantic `colors` below, never these raw values, so a
- * future palette/theme swap never requires touching component code
- * (`docs/motus/architecture.md` §4).
+ * Primitive Stitch color scale. Intentionally not exposed to Tailwind:
+ * components must consume the semantic `colors` below, never these raw
+ * values, so a future palette/theme swap never requires touching component
+ * code (`docs/motus/architecture.md` §4).
  */
 const palette = {
   white: "#FFFFFF",
-  slate50: "#F8FAFC",
-  slate100: "#F1F5F9",
-  slate200: "#E2E8F0",
-  slate300: "#CBD5E1",
-  slate500: "#64748B",
-  slate900: "#0F172A",
-  blue50: "#EFF6FF",
-  blue600: "#2563EB",
-  blue700: "#1D4ED8",
-  red600: "#DC2626",
-  red700: "#B91C1C",
-  amber500: "#F59E0B",
-  green600: "#16A34A",
+  background: "#F6FAFF",
+  onSurface: "#171C20",
+  onSurfaceVariant: "#414754",
+  outline: "#727785",
+  outlineVariant: "#C1C6D6",
+  borderSubtle: "#DADCE0",
+  mapBackground: "#F8F9FA",
+
+  surfaceContainerLowest: "#FFFFFF",
+  surfaceContainerLow: "#F0F4FA",
+  surfaceContainer: "#EAEEF4",
+  surfaceContainerHigh: "#E4E9EE",
+  surfaceContainerHighest: "#DEE3E8",
+
+  primary: "#005BBF",
+  onPrimary: "#FFFFFF",
+  primaryContainer: "#1A73E8",
+  onPrimaryContainer: "#FFFFFF",
+
+  secondary: "#0058BB",
+  onSecondary: "#FFFFFF",
+  secondaryContainer: "#1471E6",
+  onSecondaryContainer: "#FEFCFF",
+  secondaryFixed: "#D8E2FF",
+
+  tertiary: "#9E4300",
+  onTertiary: "#FFFFFF",
+  tertiaryContainer: "#C55500",
+  onTertiaryContainer: "#0E0200",
+  tertiaryFixed: "#FFDBCB",
+
+  error: "#BA1A1A",
+  onError: "#FFFFFF",
+  errorContainer: "#FFDAD6",
+  onErrorContainer: "#93000A",
+
+  /**
+   * No Stitch/DESIGN.md value exists for a Material-style "warning" role —
+   * none of the 4 exported screens render one (`stitch-screen-inventory.md`
+   * §0 notes `semantic-error` itself is declared but unused). Kept as the
+   * pre-existing standard, WCAG-checked amber-500 swatch rather than
+   * inventing a Stitch-branded value with no source
+   * (`docs/motus/brand-guidelines.md` §4 already flags this as open).
+   */
+  warning: "#F59E0B",
+
+  semanticSuccess: "#188038",
 } as const;
 
 type Palette = typeof palette;
@@ -53,57 +95,72 @@ type Palette = typeof palette;
  */
 function buildSemanticColors(p: Palette) {
   return {
-    background: p.slate50,
-    surface: p.white,
-    surfaceElevated: p.white,
-    foreground: p.slate900,
-    muted: p.slate500,
+    background: p.background,
+    surface: p.surfaceContainerLowest,
+    surfaceElevated: p.surfaceContainerLowest,
+    foreground: p.onSurface,
+    muted: p.onSurfaceVariant,
 
-    border: p.slate200,
-    borderFocused: p.blue600,
+    border: p.borderSubtle,
+    borderFocused: p.primary,
 
-    primary: p.blue600,
-    onPrimary: p.white,
-    primaryPressed: p.blue700,
-    primaryDisabled: p.slate300,
+    primary: p.primary,
+    onPrimary: p.onPrimary,
+    /** Matches Stitch's own hover/press target for primary buttons (`hover:bg-primary-container`). */
+    primaryPressed: p.primaryContainer,
+    primaryDisabled: p.outlineVariant,
+    primaryContainer: p.primaryContainer,
+    onPrimaryContainer: p.onPrimaryContainer,
 
-    secondary: p.slate900,
-    onSecondary: p.white,
+    secondary: p.secondary,
+    onSecondary: p.onSecondary,
+    secondaryContainer: p.secondaryContainer,
+    onSecondaryContainer: p.onSecondaryContainer,
+    secondaryFixed: p.secondaryFixed,
 
-    danger: p.red600,
-    onDanger: p.white,
-    dangerPressed: p.red700,
+    tertiary: p.tertiary,
+    onTertiary: p.onTertiary,
+    tertiaryContainer: p.tertiaryContainer,
+    onTertiaryContainer: p.onTertiaryContainer,
+    tertiaryFixed: p.tertiaryFixed,
 
-    warning: p.amber500,
-    onWarning: p.slate900,
+    danger: p.error,
+    onDanger: p.onError,
+    /** Stitch's `on-error-container` — a dark red, used as the pressed/darker error state. */
+    dangerPressed: p.onErrorContainer,
+    errorContainer: p.errorContainer,
+    onErrorContainer: p.onErrorContainer,
 
-    success: p.green600,
-    onSuccess: p.white,
+    warning: p.warning,
+    onWarning: p.onSurface,
 
-    selected: p.blue50,
-    onSelected: p.blue700,
+    success: p.semanticSuccess,
+    onSuccess: p.onPrimary,
 
-    disabled: p.slate300,
-    onDisabled: p.slate500,
+    selected: p.surfaceContainerLow,
+    onSelected: p.primary,
 
-    loading: p.slate200,
+    disabled: p.surfaceContainerHighest,
+    onDisabled: p.outline,
+
+    loading: p.surfaceContainer,
+
+    outline: p.outline,
+    outlineVariant: p.outlineVariant,
+    surfaceContainerLowest: p.surfaceContainerLowest,
+    surfaceContainerLow: p.surfaceContainerLow,
+    surfaceContainer: p.surfaceContainer,
+    surfaceContainerHigh: p.surfaceContainerHigh,
+    surfaceContainerHighest: p.surfaceContainerHighest,
+    mapBackground: p.mapBackground,
   } as const;
 }
 
 /**
  * Semantic colors — the only public color API. Covers the required states
- * (default/pressed/focused/selected/disabled/loading/success/warning/error):
- * pressed -> `primaryPressed`/`dangerPressed`, focused -> `borderFocused`,
- * selected -> `selected`/`onSelected`, disabled -> `disabled`/`onDisabled`/
- * `primaryDisabled`, loading -> `loading`, success/warning/error -> `success`
- * /`warning`/`danger` (error state === danger intent, one token, not two).
- *
- * `danger`/`warning`/`success` have no brand-approved values yet
- * (`docs/motus/brand-guidelines.md` §4 flags this open); the values above
- * are the standard, WCAG-contrast-checked Tailwind red-600/amber-500/
- * green-600 swatches, chosen the same way the pre-existing `primary`/
- * `foreground`/`background` values already happened to match Tailwind's
- * slate/blue scale. Replace in `palette` only, once product/design decides.
+ * (default/pressed/focused/selected/disabled/loading/success/warning/error)
+ * plus the Material-style "container" vocabulary the Stitch screens use
+ * throughout (`primaryContainer`, `surfaceContainer*`, `tertiary*`, ...).
  */
 export const colors = buildSemanticColors(palette);
 
@@ -115,31 +172,36 @@ export type ColorToken = keyof typeof colors;
 // then composed — never retyped — into the `typography` Tailwind fontSize
 // entries components actually use (`text-body`, `text-title`, ...).
 //
-// No `fontFamily` token: `assets/fonts/` is empty and no typeface has been
-// licensed yet (`docs/motus/brand-guidelines.md` §5). React Native's `Text`
-// takes a single native font name, not a CSS font stack, so guessing one
-// here would be actively wrong at runtime, not just provisional — omitted
-// until a real typeface is chosen.
+// Font family: Stitch specifies "Inter" for every text role
+// (`stitch-screen-inventory.md` §0) plus Material Symbols Outlined for
+// icons (handled by `@expo/vector-icons`'s `MaterialSymbols`/`MaterialIcons`
+// set, not a font token). `assets/fonts/` is still empty and Inter is not
+// yet bundled/loaded via `expo-font` — components fall back to the system
+// font until that's wired up; no native font name is guessed here.
 // ---------------------------------------------------------------------------
 
 export const fontSize = {
-  xs: "12px",
-  sm: "14px",
-  base: "16px",
-  lg: "18px",
-  xl: "20px",
-  "2xl": "24px",
-  "3xl": "32px",
+  labelSm: "11px",
+  bodyMd: "14px",
+  labelLg: "14px",
+  labelMd: "12px",
+  headlineMd: "18px",
+  headlineLgMobile: "20px",
+  bodyLg: "16px",
+  headlineLg: "24px",
+  displayLg: "32px",
 } as const;
 
 export const lineHeight = {
-  xs: "16px",
-  sm: "20px",
-  base: "24px",
-  lg: "26px",
-  xl: "28px",
-  "2xl": "32px",
-  "3xl": "40px",
+  labelSm: "16px",
+  bodyMd: "20px",
+  labelLg: "20px",
+  labelMd: "16px",
+  headlineMd: "24px",
+  headlineLgMobile: "28px",
+  bodyLg: "24px",
+  headlineLg: "32px",
+  displayLg: "40px",
 } as const;
 
 export const fontWeight = {
@@ -152,29 +214,67 @@ export const fontWeight = {
 /**
  * Composite Tailwind `fontSize` entries (`[size, { lineHeight, fontWeight }]`
  * tuples) — the API components actually consume via `text-*` classNames.
- * `body` and `title` keep the exact values the provisional tokens already
- * had, so no visual output changes for existing screens.
+ * Names kept from the pre-Stitch scale (`caption`/`body`/`label`/`title`/
+ * `headline`) so existing components need no rename, each repointed to its
+ * closest Stitch role (`label-sm`/`body-lg`/`label-lg`/`headline-lg`/
+ * `display-lg`); 4 new roles Stitch uses that had no prior equivalent are
+ * added alongside (`bodyMd`/`labelMd`/`headlineMd`/`headlineLgMobile`).
+ * `body`/`label` are numerically identical to the previous provisional
+ * tokens (Stitch's `body-lg`/`label-lg` already matched); `title`/`headline`
+ * change weight and gain letter-spacing to match Stitch's `headline-lg`/
+ * `display-lg` exactly.
  */
 export const typography = {
   caption: [
-    fontSize.xs,
-    { lineHeight: lineHeight.xs, fontWeight: fontWeight.regular },
+    fontSize.labelSm,
+    { lineHeight: lineHeight.labelSm, fontWeight: fontWeight.regular },
   ],
   body: [
-    fontSize.base,
-    { lineHeight: lineHeight.base, fontWeight: fontWeight.regular },
+    fontSize.bodyLg,
+    { lineHeight: lineHeight.bodyLg, fontWeight: fontWeight.regular },
+  ],
+  bodyMd: [
+    fontSize.bodyMd,
+    { lineHeight: lineHeight.bodyMd, fontWeight: fontWeight.regular },
   ],
   label: [
-    fontSize.sm,
-    { lineHeight: lineHeight.sm, fontWeight: fontWeight.medium },
+    fontSize.labelLg,
+    {
+      lineHeight: lineHeight.labelLg,
+      fontWeight: fontWeight.medium,
+      letterSpacing: "0.1px",
+    },
+  ],
+  labelMd: [
+    fontSize.labelMd,
+    {
+      lineHeight: lineHeight.labelMd,
+      fontWeight: fontWeight.medium,
+      letterSpacing: "0.5px",
+    },
   ],
   title: [
-    fontSize["2xl"],
-    { lineHeight: lineHeight["2xl"], fontWeight: fontWeight.semibold },
+    fontSize.headlineLg,
+    { lineHeight: lineHeight.headlineLg, fontWeight: fontWeight.medium },
+  ],
+  headlineMd: [
+    fontSize.headlineMd,
+    { lineHeight: lineHeight.headlineMd, fontWeight: fontWeight.medium },
+  ],
+  headlineLgMobile: [
+    fontSize.headlineLgMobile,
+    {
+      lineHeight: lineHeight.headlineLgMobile,
+      fontWeight: fontWeight.medium,
+    },
   ],
   headline: [
-    fontSize["3xl"],
-    { lineHeight: lineHeight["3xl"], fontWeight: fontWeight.bold },
+    fontSize.displayLg,
+    {
+      lineHeight: lineHeight.displayLg,
+      fontWeight: fontWeight.semibold,
+      letterSpacing: "-0.02em",
+    },
   ],
 } as const;
 
@@ -182,7 +282,8 @@ export type TypographyToken = keyof typeof typography;
 
 // ---------------------------------------------------------------------------
 // Spacing, radius, border width — kept as the same 4px-rhythm scale already
-// in use, extended only where a new category needs it.
+// in use. Radius is extended to Stitch's fuller scale (cards use 16px,
+// bottom sheets 24px — the previous 3-step scale had no room for either).
 // ---------------------------------------------------------------------------
 
 export const spacing = {
@@ -198,7 +299,9 @@ export type SpacingToken = keyof typeof spacing;
 export const radius = {
   sm: "4px",
   md: "8px",
-  lg: "16px",
+  lg: "12px",
+  xl: "16px",
+  "2xl": "24px",
   full: "9999px",
 } as const;
 
@@ -284,6 +387,15 @@ export const density = {
 // partial Tailwind mapping; `getShadowStyle()` in `./shadowStyle.ts` is the
 // full, correct cross-platform mapping and is the one components should
 // prefer.
+//
+// Values approximate Stitch's own elevation spec (`stitch-screen-inventory.md`
+// §0, "Elevation & Depth"): Level 2 (cards/pins) is a dark neutral shadow at
+// low opacity, not a color-tinted one — `colors.foreground` (`#171C20`) is
+// used as the shadow color instead of Stitch's literal `rgba(60,64,67,…)`
+// so the single source of truth stays the token file, not a second raw
+// color. `sheet` is new: Stitch's Level 3 (bottom sheets) is the only
+// upward-directed shadow in the system, which the pre-existing 3-level
+// scale (all downward) had no slot for.
 // ---------------------------------------------------------------------------
 
 function withAlpha(hex: string, alpha: number): string {
@@ -293,7 +405,7 @@ function withAlpha(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-export type ShadowLevel = "none" | "sm" | "md" | "lg";
+export type ShadowLevel = "none" | "sm" | "md" | "lg" | "sheet";
 
 export const shadow: Record<
   ShadowLevel,
@@ -322,11 +434,11 @@ export const shadow: Record<
     ios: {
       shadowColor: colors.foreground,
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.08,
-      shadowRadius: 2,
+      shadowOpacity: 0.15,
+      shadowRadius: 3,
     },
     android: { elevation: 2 },
-    boxShadow: `0 1px 2px ${withAlpha(colors.foreground, 0.08)}`,
+    boxShadow: `0px 1px 2px ${withAlpha(colors.foreground, 0.3)}, 0px 1px 3px 1px ${withAlpha(colors.foreground, 0.15)}`,
   },
   md: {
     ios: {
@@ -347,6 +459,17 @@ export const shadow: Record<
     },
     android: { elevation: 8 },
     boxShadow: `0 4px 8px ${withAlpha(colors.foreground, 0.16)}`,
+  },
+  /** Upward shadow for bottom sheets/panels (Stitch Level 3). */
+  sheet: {
+    ios: {
+      shadowColor: colors.foreground,
+      shadowOffset: { width: 0, height: -2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 12,
+    },
+    android: { elevation: 8 },
+    boxShadow: `0px -2px 12px ${withAlpha(colors.foreground, 0.1)}`,
   },
 };
 

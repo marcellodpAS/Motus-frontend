@@ -83,7 +83,7 @@ export function Button({
       disabled={isDisabled}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      className={`min-h-touch-comfortable min-w-touch-comfortable flex-row items-center justify-center gap-sm rounded-md px-md ${containerClassName} ${className ?? ""}`.trim()}
+      className={`min-h-touch-comfortable min-w-touch-comfortable flex-row items-center justify-center gap-sm rounded-full px-md ${containerClassName} ${className ?? ""}`.trim()}
       {...props}
     >
       {loading ? <Spinner size="sm" color={labelColor} /> : null}

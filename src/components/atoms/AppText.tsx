@@ -12,8 +12,12 @@ import type { ColorToken, TypographyToken } from "@/theme";
 const VARIANT_CLASSNAMES: Record<TypographyToken, string> = {
   caption: "text-caption",
   body: "text-body",
+  bodyMd: "text-bodyMd",
   label: "text-label",
+  labelMd: "text-labelMd",
   title: "text-title",
+  headlineMd: "text-headlineMd",
+  headlineLgMobile: "text-headlineLgMobile",
   headline: "text-headline",
 };
 
@@ -22,16 +26,27 @@ const COLOR_CLASSNAMES = {
   muted: "text-muted",
   primary: "text-primary",
   onPrimary: "text-onPrimary",
+  primaryContainer: "text-primaryContainer",
+  onPrimaryContainer: "text-onPrimaryContainer",
   secondary: "text-secondary",
   onSecondary: "text-onSecondary",
+  secondaryContainer: "text-secondaryContainer",
+  onSecondaryContainer: "text-onSecondaryContainer",
+  tertiary: "text-tertiary",
+  onTertiary: "text-onTertiary",
+  tertiaryContainer: "text-tertiaryContainer",
+  onTertiaryContainer: "text-onTertiaryContainer",
   danger: "text-danger",
   onDanger: "text-onDanger",
+  errorContainer: "text-errorContainer",
+  onErrorContainer: "text-onErrorContainer",
   warning: "text-warning",
   onWarning: "text-onWarning",
   success: "text-success",
   onSuccess: "text-onSuccess",
   onSelected: "text-onSelected",
   onDisabled: "text-onDisabled",
+  outline: "text-outline",
 } as const satisfies Partial<Record<ColorToken, string>>;
 
 export type AppTextColor = keyof typeof COLOR_CLASSNAMES;
