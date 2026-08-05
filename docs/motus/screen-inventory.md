@@ -1,0 +1,30 @@
+# Motus — Inventario schermate
+
+## Avviso metodologico
+
+🔴 **Nessuna schermata, mockup, wireframe o specifica UI esiste nella cartella `Motus`.** Il backend non contiene alcun riferimento a un'interfaccia utente. Le schermate elencate di seguito sono **interamente un'assunzione (🟡)**: rappresentano l'insieme minimo di superfici necessarie a esporre le capacità confermate dell'API (vedi `product-requirements.md` §3 Casi d'uso e `user-flows.md`). Non aggiungono alcuna funzionalità oltre a quelle già confermate — sono solo il "contenitore UI" per casi d'uso già documentati.
+
+Ogni riga della tabella riporta nella colonna **Origine del requisito** il caso d'uso/endpoint che la giustifica; nessuna riga è priva di un riferimento tracciabile a `app/api.py` o `README.md`.
+
+## Tabella schermate
+
+| ID | Nome | Utente interessato | Scopo | Dati richiesti | Azioni | Stati UI | Endpoint coinvolti | Mobile | Automotive | Origine del requisito |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S01 | Ricerca impianti | Utente consultante | Cercare impianti per comune/provincia/testo libero e vederne l'elenco con i prezzi | Input utente: `comune`/`city`, `provincia`, `q` (testo libero, non documentato nel README, solo nel codice); output: lista impianti + `prices` per impianto, `pagination` | Inserire/modificare filtri; scorrere risultati (paginazione `limit`/`offset`); selezionare un impianto → S03 | Vuoto (nessun filtro inserito, se previsto un flow "esplora tutto"); caricamento; popolato; nessun risultato (`data: []`); errore parametri (400); errore server (500) | `GET /api/stations` | 🟡 Presumibile (Expo iOS/Android, da `repository-audit.md`) | 🔴 Non specificato in alcun documento | UC2 — `app/api.py:92-128`, `README.md:23-29` |
+| S02 | Ricerca prezzi per carburante | Utente consultante | Cercare prezzi filtrando per tipo di carburante, provincia o comune | Input utente: `carburante`, `provincia`, `comune`; output: righe prezzo con dati identificativi impianto, `pagination` | Inserire/modificare filtri; scorrere risultati; selezionare una riga → S03 | Vuoto; caricamento; popolato; nessun risultato; errore parametri (400); errore server (500) | `GET /api/prices` | 🟡 Presumibile | 🔴 Non specificato | UC4 — `app/api.py:219-248`, `README.md:37-41` |
+| S03 | Dettaglio impianto | Utente consultante | Mostrare i dati di un impianto e tutti i suoi prezzi correnti | Input: `id_impianto` (da S01/S02/S04); output: dati impianto (`stations_enriched`) + array `prices` | Tornare alla lista di provenienza; (🟡 eventuale apertura mappa/navigazione esterna verso le coordinate, non confermata da alcun documento) | Caricamento; popolato; impianto senza prezzi (`prices: []`, possibile se import parziale); impianto senza coordinate (`geocoding_status` ≠ `success`); non trovato (404); errore server (500) | `GET /api/stations/{id}` | 🟡 Presumibile | 🔴 Non specificato | UC3 — `app/api.py:198-217`, `README.md:31-35` |
+| S04 | Impianti vicini ("vicino a me") | Utente consultante | Trovare gli impianti più vicini a una posizione geografica, ordinati per distanza | Input: `lat`, `lon` (🟡 origine assunta: geolocalizzazione device, non documentata), `limit` opzionale; output: lista impianti + `distance_km` + `prices`, `origin` | Fornire/aggiornare posizione; scorrere risultati ordinati per distanza; selezionare un impianto → S03 | Caricamento; popolato; nessun impianto con coordinate disponibili (`total_available: 0`); posizione non valida (400); errore server (500) | `GET /api/stations/nearby` | 🟡 Presumibile (richiede permesso di geolocalizzazione, non documentato) | 🔴 Non specificato | UC5 — `app/api.py:146-196`, `README.md:43-49` |
+
+## Schermate volutamente escluse
+
+| Candidata | Motivo di esclusione |
+| --- | --- |
+| "Stato del servizio" / diagnostica (`GET /health`) | 🟡 Endpoint tecnico rivolto a operatori/monitoraggio, non a un caso d'uso utente finale in alcun documento. Non incluso come schermata; eventuale banner "servizio non disponibile" è un pattern di gestione errore trasversale (stato UI "errore server" già presente in S01–S04), non una schermata dedicata. Vedi `open-questions.md`. |
+| Login/Registrazione/Profilo utente | 🔴 Nessun requisito di autenticazione in alcun documento (`product-requirements.md` §7–8). |
+| Gestione preferiti/storico ricerche | 🔴 Non presente in alcun documento. |
+| Import/Amministrazione dati | 🔴 Operazione di sistema (Flusso 6 in `user-flows.md`), eseguita da cron/CLI, non da interfaccia utente. |
+
+## Note sulle colonne "Mobile" e "Automotive"
+
+- 🟡 **Mobile**: marcato "Presumibile" per tutte le schermate solo perché `Motus-frontend` è un progetto Expo cross-platform (iOS/Android/web, confermato in `docs/motus/repository-audit.md`). Nessun documento della cartella `Motus` conferma o vincola la disponibilità mobile di queste funzionalità.
+- 🔴 **Automotive**: nessuna schermata ha disponibilità automotive confermata o presumibile. Nessun documento in nessuno dei due repository menziona Android Auto, CarPlay o integrazioni infotainment.
