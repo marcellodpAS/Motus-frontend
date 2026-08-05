@@ -4,13 +4,13 @@
 
 Documento di sintesi che traduce i deliverable dei Task 1–5 in decisioni architetturali per `Motus-frontend`:
 
-| Task | Documento | Cosa fornisce a questa architettura |
-| --- | --- | --- |
-| 1 | `repository-audit.md` | Stato reale del repository: bootstrap Expo, struttura cartelle già scaffoldata, debiti tecnici noti |
-| 2 | `product-requirements.md`, `domain-model.md`, `screen-inventory.md`, `user-flows.md` | Casi d'uso confermati (UC1–UC7), entità, 4 schermate ipotizzate (S01–S04), tutte marcate come assunzione |
-| 3 | `api-contract.md`, `api-discrepancies.md`, `api-screen-mapping.md`, `open-questions.md` | Contratto API verificato dal vivo, incongruenze reali da isolare lato client |
-| 4 | `mcp-audit.md`, `design-inputs.md` | Nessun design system definitivo disponibile; token attuali dichiarati provvisori |
-| 5 | `automotive-feasibility.md`, `automotive-architecture-decision.md` | Stato per piattaforma automotive, nessuna implementazione esistente |
+| Task | Documento                                                                               | Cosa fornisce a questa architettura                                                                      |
+| ---- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 1    | `repository-audit.md`                                                                   | Stato reale del repository: bootstrap Expo, struttura cartelle già scaffoldata, debiti tecnici noti      |
+| 2    | `product-requirements.md`, `domain-model.md`, `screen-inventory.md`, `user-flows.md`    | Casi d'uso confermati (UC1–UC7), entità, 4 schermate ipotizzate (S01–S04), tutte marcate come assunzione |
+| 3    | `api-contract.md`, `api-discrepancies.md`, `api-screen-mapping.md`, `open-questions.md` | Contratto API verificato dal vivo, incongruenze reali da isolare lato client                             |
+| 4    | `mcp-audit.md`, `design-inputs.md`                                                      | Nessun design system definitivo disponibile; token attuali dichiarati provvisori                         |
+| 5    | `automotive-feasibility.md`, `automotive-architecture-decision.md`                      | Stato per piattaforma automotive, nessuna implementazione esistente                                      |
 
 Questo documento **non introduce nuovi requisiti**: ogni scelta è motivata da uno dei documenti sopra o da un vincolo esplicito del Task 6. Le decisioni architetturalmente significative sono tracciate come ADR in `docs/motus/adr/`.
 
@@ -38,7 +38,7 @@ flowchart TB
         C["atoms → molecules → organisms → templates"]
     end
     subgraph Theme["src/theme"]
-        T["token semantici (provvisori)"]
+        T["token semantici (Task 10)"]
     end
     subgraph Services["src/services/motus"]
         S["client HTTP + un modulo per risorsa + tipi"]
@@ -70,16 +70,16 @@ La struttura `atoms/molecules/organisms/templates` è già scaffoldata (vuota ol
 - **atoms**: elementi senza conoscenza del dominio Motus (testo, bottone, campo di input, indicatore di caricamento). Introdotti solo quando una feature li richiede realmente — non pre-costruiti (coerente con l'osservazione "yagni" già presente in `repository-audit.md`).
 - **molecules**: composizioni con una singola responsabilità di presentazione dati (es. una riga risultato, un badge prezzo, un campo filtro). I nomi definitivi **non** sono fissati in questo documento — sarebbe design di schermata, escluso dal perimetro del Task 6.
 - **organisms**: blocchi con stato locale di presentazione (es. una lista che sa mostrare i propri stati vuoto/caricamento/errore, una barra filtri). Gli organism ricevono dati e callback via prop, non chiamano `services`.
-- **templates**: composizione di organism per una *forma* di schermata. Le quattro schermate ipotizzate condividono solo due forme reali: "lista con filtri e paginazione" (S01, S02, S04) e "dettaglio" (S03) — vedi §7.
+- **templates**: composizione di organism per una _forma_ di schermata. Le quattro schermate ipotizzate condividono solo due forme reali: "lista con filtri e paginazione" (S01, S02, S04) e "dettaglio" (S03) — vedi §7.
 
 Nessun componente condiviso importa da `src/services` o `src/features`. Questo è verificabile con una regola di lint sui path di import quando la prima feature reale sarà introdotta (non oggi: sarebbe una modifica di tooling non richiesta da questo task).
 
 ## 4. Design system
 
-- Oggi esistono solo token tecnici provvisori (`src/theme/tokens.js`), dichiarati tali dal commento stesso nel file (`design-inputs.md` §2).
-- **Decisione architetturale**: i componenti condivisi consumano esclusivamente token semantici via NativeWind (`bg-background`, `text-foreground`, `text-primary`, ecc.), mai valori hardcoded. In questo modo, quando il design sarà chiarito (risoluzione del riferimento "Stitch", o altro processo di design), la sostituzione avviene in `tokens.js`/`tailwind.config.js` senza toccare i componenti.
-- Nessuna strategia di dark mode esplicita è definita ora: non c'è un requisito raccolto in `product-requirements.md`. L'architettura non la preclude (`expo-system-ui` è già configurato con `userInterfaceStyle: "automatic"`).
-- Il debito noto — duplicazione tra `tokens.js` (runtime) e `tokens.d.ts` (dichiarazione manuale) — resta segnalato ma **non risolto in questo task**: va affrontato quando il design system cresce oltre i token provvisori attuali (già raccomandato in `repository-audit.md`).
+- **Aggiornato dal Task 10**: token semantici tipizzati in `src/theme/tokens.ts`, dettagliati in [`design-tokens.md`](./design-tokens.md). I valori restano provvisori dove il brand non ha ancora deciso (`danger`/`warning`/`success`, `brand-guidelines.md` §4), ma la struttura (nomi semantici, stati, fonte unica) non è più un placeholder.
+- **Decisione architetturale**: i componenti condivisi consumano esclusivamente token semantici via NativeWind (`bg-background`, `text-foreground`, `text-primary`, ecc.), mai valori hardcoded. In questo modo, quando il design sarà chiarito (risoluzione del riferimento "Stitch", o altro processo di design), la sostituzione avviene in `tokens.ts`/`tailwind.config.js` senza toccare i componenti.
+- Nessuna strategia di dark mode esplicita è definita ora: non c'è un requisito raccolto in `product-requirements.md`. L'architettura non la preclude (`expo-system-ui` è già configurato con `userInterfaceStyle: "automatic"`) e `design-tokens.md` §6 ne documenta il percorso di estensione (nessuno store globale necessario, NativeWind legge lo schema colore nativo).
+- **Debito risolto dal Task 10**: la duplicazione tra `tokens.js` (runtime) e `tokens.d.ts` (dichiarazione manuale) segnalata qui è stata eliminata — `tokens.ts` è ora l'unico file, nativamente tipizzato (`design-tokens.md` §1).
 
 ## 5. Servizi API
 
