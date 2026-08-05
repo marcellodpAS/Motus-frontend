@@ -258,6 +258,9 @@ completo con criterio di sblocco futuro: `docs/motus/carplay-integration.md`.
 - La shell di navigazione (Home con 3 pulsanti, Stack semplice, nessuna tab
   bar) è la scelta più semplice che soddisfa il criterio di completamento di
   VS6, non un'architettura dell'informazione definitiva (ADR-0005).
+  **Superseduta dal Task 19**: sostituita da una tab bar Map/Favorites/
+  Pro/Profile una volta reso disponibile l'export reale del progetto
+  Stitch — vedi `docs/motus/stitch-implementation-gap.md` riga 6.
 - `danger`/`warning`/`success` usano gli swatch standard Tailwind in assenza
   di un colore approvato dal brand (`design-tokens.md` §3).
 - Nessuna soglia di design "compact" per i telefoni: `ComponentDensity`

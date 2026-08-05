@@ -5,6 +5,20 @@ Strumento operativo, non deliverable finale. Stato rilevato a inizio Task 18
 stato reale raggiunto. Riferimenti: `screen-inventory.md`, `user-flows.md`,
 `feature-backlog.md`, `api-screen-mapping.md`.
 
+> ⚠️ **Invalidata dal Task 19** (`docs/motus/stitch-implementation-gap.md`).
+> Ogni riga `complete-and-verified` qui sotto copriva solo il contratto
+> dati col backend (chiamate live, sola lettura) — **mai** un confronto
+> visivo con un riferimento di design reale (Stitch non era raggiungibile
+> in questo task) né un'esecuzione su simulatore/emulatore. Il Task 19 ha
+> inoltre sostituito interamente il modello di navigazione (tab bar
+> Map/Favorites/Pro/Profile al posto della Home a 3 pulsanti) e aggiunto 4
+> schermate assenti da questa matrice (Mappa, Segnala Prezzo, Previsioni
+> Pro, Favorites/Profile). Fonti aggiornate, in ordine di priorità:
+> `stitch-screen-inventory.md`, `source-requirements-inventory.md`,
+> `stitch-implementation-gap.md`, `visual-validation/README.md`. Questo
+> file resta come registro storico dello stato a fine Task 18, non come
+> stato attuale del prodotto.
+
 ## Schermate
 
 | ID  | Schermata               | Route             | Componenti                                                        | Endpoint                   | Stato iniziale (inizio Task 18)                     | Stato finale (fine Task 18) | Problemi rilevati                                                                         | Intervento eseguito                                                                                                                   | Test esistenti                                               | Test aggiunti                                                                              |

@@ -100,6 +100,7 @@ Nessun componente condiviso importa da `src/services` o `src/features`. Questo �
 - Expo Router (file-based, `src/app`), già configurato con uno `Stack` radice e `headerShown: false`.
 - I 4 casi d'uso confermati condividono solo **due forme**: "lista con filtri e paginazione" (S01, S02, S04) e "dettaglio" (S03). La struttura di route rispecchia questa realtà, non quattro disegni indipendenti.
 - **Composizione di navigazione tra i punti di ingresso** (tab bar vs stack singolo) non è decisa in dettaglio qui: sarebbe già una scelta di informazione-architettura/UI, esclusa dal perimetro ("nessuna schermata definitiva"). Principio adottato (ADR-0005): iniziare con la forma più semplice che serve la prima vertical slice (route singola), aggiungere un livello di navigazione tra punti di ingresso solo quando esistono realmente ≥ 2 schermate di ingresso da collegare.
+  > **Aggiornamento Task 19**: la scelta tecnica concreta fatta a valle di questo principio (Stack singolo con Home a 3 pulsanti) è stata sostituita da una `Tabs` a 4 destinazioni (Map/Favorites/Pro/Profile), non perché il principio fosse sbagliato ma perché l'export reale del progetto Stitch (non disponibile ai Task 6-18) mostra che la tab bar era l'architettura di informazione effettivamente prevista, non una scelta ancora da anticipare. Vedi `docs/motus/stitch-implementation-gap.md` riga 6.
 - S03 (dettaglio) è raggiunto da una route dinamica singola (parametro `id_impianto`), mai duplicata per provenienza (S01, S02 o S04 puntano tutte alla stessa route).
 
 ## 8. Capability di piattaforma

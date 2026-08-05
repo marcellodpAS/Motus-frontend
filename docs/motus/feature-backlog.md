@@ -188,6 +188,16 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 
 **Note di implementazione (Task 18)**: ADR-0005 lasciava la scelta tecnica aperta fino a quando ≥ 2 schermate di ingresso fossero reali — con S01/S02/S04 tutte complete in questa stessa sessione, la schermata bootstrap (`src/app/index.tsx`, ex `SetupScreen` con testo dimostrativo "Setup completato") è stata sostituita da una vera Home (`HomeRoute`) con tre pulsanti (`Cerca impianti` → `/stations`, `Cerca prezzi carburante` → `/prices`, `Impianti vicini a me` → `/nearby`), senza tab bar/drawer: un semplice Stack con un'unica route home resta la shell più semplice che soddisfa il criterio "ogni punto di ingresso raggiungibile, nessuno isolato" senza fissare un'architettura dell'informazione definitiva. Test aggiunti/riscritti: `__tests__/app/HomeScreen.test.tsx` (ex `SetupScreen.test.tsx`), `__tests__/app/navigation-shell.test.tsx` (ex `stations-navigation.test.tsx`, esteso: Home → ciascuno dei tre punti di ingresso e ritorno, S01/S02/S04 → S03 con parametro `id_impianto` corretto e ritorno alla schermata di provenienza).
 
+**Superseduta dal Task 19**: `HomeRoute`/`src/app/index.tsx` e
+`__tests__/app/HomeScreen.test.tsx` sono stati rimossi. L'export reale del
+progetto Stitch (non disponibile in Task 18) mostra una tab bar
+Map/Favorites/Pro/Profile come navigazione di primo livello — `/` è ora la
+tab Map (`src/app/(tabs)/index.tsx`), non più una Home a pulsanti; S01/S02
+restano raggiungibili in push dalla tab Map, S04 dalla bottom sheet della
+mappa. Vedi `docs/motus/stitch-implementation-gap.md` riga 6 e
+`docs/motus/adr/0005-navigazione-costruita-incrementalmente.md` (nota di
+aggiornamento).
+
 ---
 
 ## Ordine di implementazione (riepilogo)
