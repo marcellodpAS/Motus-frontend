@@ -102,11 +102,13 @@ Le seguenti attività **non hanno una fase assegnata** perché dipendono da deci
 
 | Attività                             | Bloccata da                                                                                                | Documento                             |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| Automotive (Android Auto / CarPlay)  | Decisione di prodotto su quali schermate portare in auto; per CarPlay anche approvazione entitlement Apple | `automotive-architecture-decision.md` |
+| Automotive — integrazione nativa     | Decisione di prodotto su quali schermate portare in auto; per CarPlay anche approvazione entitlement Apple | `automotive-architecture-decision.md` |
 | Design system definitivo             | Riferimento "Stitch" irrisolto; nessun progetto su `DesignSync`                                            | `design-inputs.md`, `mcp-audit.md`    |
 | Dark mode esplicito                  | Nessun requisito raccolto                                                                                  | `product-requirements.md`             |
 | Modalità offline / cache persistente | Nessun requisito raccolto, nessuna libreria di cache introdotta (ADR-0002)                                 | `open-questions.md` #7                |
 | Autenticazione                       | Assenza dichiarata intenzionale o provvisoria, non chiarito                                                | `open-questions.md` #5                |
+
+Il modello condiviso automotive (tipi, mapping dati→template, comandi, adapter tipizzati indipendenti dagli SDK) non è bloccato dalla decisione di prodotto della prima riga: è stato costruito come Task 14, fuori da questo piano a fasi (non introduce schermate, non dipende da VS2–VS6). Vedi `docs/motus/automotive-shared-model.md`, `src/automotive/`. Resta bloccata solo l'integrazione nativa vera e propria.
 
 ## Riepilogo ordine
 
