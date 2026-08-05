@@ -6,11 +6,11 @@ Deliverable del Task 7 (`src/services/motus`). Spiega come impostare `EXPO_PUBLI
 
 Copia `.env.example` in `.env` (non tracciato — vedi `.gitignore`) e imposta l'URL in base a dove gira l'app:
 
-| Ambiente | Valore | Perché |
-| --- | --- | --- |
-| iOS Simulator | `http://localhost:8080` | Il simulatore condivide la rete/host del Mac |
-| Web (`expo start --web`) | `http://localhost:8080` | Stesso browser/host della macchina di sviluppo |
-| Android Emulator | `http://10.0.2.2:8080` | `localhost` nell'emulatore punta all'emulatore stesso, non all'host — `10.0.2.2` è l'alias che Android riserva per l'host |
+| Ambiente                           | Valore                        | Perché                                                                                                                                          |
+| ---------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| iOS Simulator                      | `http://localhost:8080`       | Il simulatore condivide la rete/host del Mac                                                                                                    |
+| Web (`expo start --web`)           | `http://localhost:8080`       | Stesso browser/host della macchina di sviluppo                                                                                                  |
+| Android Emulator                   | `http://10.0.2.2:8080`        | `localhost` nell'emulatore punta all'emulatore stesso, non all'host — `10.0.2.2` è l'alias che Android riserva per l'host                       |
 | Dispositivo fisico (iOS o Android) | `http://<ip-lan-del-pc>:8080` | Il dispositivo è su una rete separata dal processo Metro; serve l'IP LAN reale della macchina di sviluppo (es. `192.168.1.42`), mai `localhost` |
 
 Il backend deve restare raggiungibile sulla porta usata (default `8080` in questi esempi, coerente con la sessione di verifica di `api-contract.md`).
@@ -35,11 +35,11 @@ Coerente con i vincoli del Task 7: solo il client generico (`client.ts`, `config
 
 `src/services/motus/errors.ts` normalizza tutto ciò che una chiamata può produrre in un'unica gerarchia (`ApiError`), senza generare testo per la UI (quella è responsabilità della feature che consuma il client):
 
-| Errore | Quando |
-| --- | --- |
-| `ApiConfigError` | `EXPO_PUBLIC_API_URL` mancante o non valido |
-| `ApiNetworkError` | `fetch` fallisce (offline, DNS, host irraggiungibile) |
-| `ApiTimeoutError` | Nessuna risposta entro `timeoutMs` (default 10s, `apiConfig.timeoutMs`) |
-| `ApiAbortError` | Richiesta annullata dal chiamante tramite `AbortSignal` |
-| `ApiHttpError` | Risposta HTTP non-2xx (`status`, più `body.error` quando il server risponde `{"error": string}`) |
-| `ApiInvalidResponseError` | Corpo della risposta non è JSON valido |
+| Errore                    | Quando                                                                                           |
+| ------------------------- | ------------------------------------------------------------------------------------------------ |
+| `ApiConfigError`          | `EXPO_PUBLIC_API_URL` mancante o non valido                                                      |
+| `ApiNetworkError`         | `fetch` fallisce (offline, DNS, host irraggiungibile)                                            |
+| `ApiTimeoutError`         | Nessuna risposta entro `timeoutMs` (default 10s, `apiConfig.timeoutMs`)                          |
+| `ApiAbortError`           | Richiesta annullata dal chiamante tramite `AbortSignal`                                          |
+| `ApiHttpError`            | Risposta HTTP non-2xx (`status`, più `body.error` quando il server risponde `{"error": string}`) |
+| `ApiInvalidResponseError` | Corpo della risposta non è JSON valido                                                           |

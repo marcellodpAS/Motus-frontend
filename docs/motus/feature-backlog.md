@@ -19,6 +19,7 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 **Stato**: nessuno stato applicativo; eventuale configurazione letta una volta (`EXPO_PUBLIC_API_URL`) senza store dedicato.
 
 **Test**:
+
 - Client HTTP: mapping corretto delle 3 forme di risposta (successo 200, errore applicativo `{"error"}`, lista vuota `data: []`) su fixture derivate da `api-contract.md`.
 - Ogni funzione di risorsa: parametri inviati correttamente (inclusi alias `comune`/`city`, parametro non documentato `q`), normalizzazione di `total`/`total_available` in un unico campo `Pagination.total`.
 - Caso limite: `EXPO_PUBLIC_API_URL` assente/vuota deve fallire in modo esplicito e testabile, non silenziosamente (oggi la variabile è dichiarata ma non letta — `repository-audit.md`).
@@ -38,6 +39,7 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 **Endpoint**: nessuno diretto (i componenti ricevono dati/stato via prop).
 
 **Componenti**:
+
 - atom: indicatore di caricamento (wrapper su `ActivityIndicator` con token di tema).
 - molecule: riga di errore applicativo (messaggio + eventuale azione "riprova").
 - organism: contenitore lista che decide quale stato mostrare (caricamento / vuoto / errore / popolato) dato uno stato esplicito passato dalla feature — non deduce lo stato da solo.
@@ -61,12 +63,14 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 **Endpoint**: `GET /api/stations?comune=&provincia=&q=&limit=&offset=` (`api-screen-mapping.md`, §S01).
 
 **Componenti**:
+
 - Riusa il kit di VS1 per gli stati caricamento/vuoto/errore.
 - Nuovo (locale alla feature finché non serve altrove): campo/i filtro, riga risultato che mostra `nome_impianto` (gestendo stringa vuota, osservata dal vivo), `bandiera`, `comune`/`provincia`, ed eventuale prezzo di sintesi da `prices[]` (gestendo array vuoto, osservato dal vivo su impianto 3498).
 
 **Stato**: locale alla feature — filtri correnti, stato di richiesta (idle/loading/success/error), pagina corrente (`offset`). Nessuno stato promosso a Zustand (nessun altro schermo consuma questi filtri).
 
 **Test**:
+
 - Hook dati: chiama `stations.search` con i parametri attesi per ciascuna combinazione di filtro.
 - Paginazione: stop corretto quando `offset + data.length >= pagination.total`.
 - Integrazione schermata (servizio mockato): copre popolato, nessun risultato, errore parametri (400 solo se un client bacato invia `limit`/`offset` non interi — caso limite da testare comunque), errore server.
@@ -86,12 +90,14 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 **Endpoint**: `GET /api/stations/{id}` (`api-screen-mapping.md`, §S03).
 
 **Componenti**:
+
 - Riusa il kit di VS1 per caricamento/errore/non-trovato.
 - Nuovo: blocco dati impianto (tutti i campi di `station.*`), lista prezzi ordinata per `carburante`, `self_service` (ordine già garantito dal server, il client non deve riordinare).
 
 **Stato**: locale — `id_impianto` da parametro di route, stato di richiesta. Nessuno stato condiviso.
 
 **Test**:
+
 - Hook dati: chiamata con `id` corretto, gestione dei due casi 404 distinti (id numerico inesistente → messaggio specifico; id malformato → messaggio generico indistinguibile da routing — il client non deve inventare una distinzione che il backend non offre).
 - Integrazione schermata: popolato con prezzi, popolato senza prezzi (`prices: []`), senza coordinate geocodificate (`latitudine_completa`/`longitudine_completa` entrambe `null`) — se la UI prevede un'azione legata alla posizione (es. apri mappa), questo stato deve avere un fallback esplicito, non un crash o un campo vuoto silenzioso.
 
@@ -110,8 +116,9 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 **Endpoint**: `GET /api/prices?carburante=&provincia=&comune=&limit=&offset=` (`api-screen-mapping.md`, §S02).
 
 **Componenti**:
+
 - Riusa il kit di VS1.
-- Riusa la *forma* di template "lista con filtri" introdotta in VS2 (stesso pattern, non lo stesso componente dati: la riga risultato è diversa, vedi sotto).
+- Riusa la _forma_ di template "lista con filtri" introdotta in VS2 (stesso pattern, non lo stesso componente dati: la riga risultato è diversa, vedi sotto).
 - Nuovo: riga risultato per `PriceRow` — oggetto **strutturalmente diverso** da `Station` (non contiene `indirizzo`, `gestore`, `bandiera`, `tipo_impianto`; ha `carburante`, `prezzo`, `self_service`, `data_comunicazione` in formato non ISO `GG/MM/AAAA HH:MM:SS`) — non riusare il componente riga di VS2 forzandolo su dati incompatibili.
 
 **Stato**: locale alla feature — filtri (incluso `carburante`, testo libero senza validazione enum: il set di valori osservati non è esaustivo, `api-contract.md`), stato di richiesta, `offset`.
@@ -133,6 +140,7 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 **Endpoint**: `GET /api/stations/nearby?lat=&lon=&limit=` (`api-screen-mapping.md`, §S04). Nota: `offset` è accettato dal server ma ignorato — questa slice non implementa paginazione per scroll, solo un `limit` esplicito.
 
 **Componenti**:
+
 - Riusa il kit di VS1.
 - Riusa la forma "lista con filtri" (qui il filtro è la posizione, non testo).
 - Riusa il componente riga risultato di VS2 (stesso schema `Station` + campo aggiuntivo `distance_km`).
@@ -141,6 +149,7 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 **Stato**: locale alla feature per lo stato di richiesta dati. La posizione corrente **può** essere promossa a Zustand solo se una seconda schermata arriva a consumarla (oggi non è il caso: nessun'altra schermata confermata la usa — non anticipare lo store, ADR-0004).
 
 **Test**:
+
 - Hook dati: chiamata con `lat`/`lon` correnti, gestione 400 (mancanti/non numerici, fuori range con messaggi distinti per lat/lon).
 - Integrazione schermata: popolato ordinato per distanza (l'ordine è garantito dal server, il test verifica solo che non venga alterato), nessun impianto con coordinate disponibili (`total_available: 0`), permesso negato/non disponibile.
 - Test esplicito che un impianto `geocoding_status: "source_only"` non compare mai in questa schermata anche se esiste nel dataset — comportamento atteso del backend (`open-questions.md` #10), non un difetto da "correggere" lato client.
@@ -174,11 +183,11 @@ Legenda dipendenze: 🧱 fondamenta richieste · 🔗 destinazione di navigazion
 ## Ordine di implementazione (riepilogo)
 
 1. **VS0** — Fondamenta: client e servizi API
-2. **VS1** — Kit UI condiviso per stati lista *(parallelizzabile con VS0)*
+2. **VS1** — Kit UI condiviso per stati lista _(parallelizzabile con VS0)_
 3. **VS2** — Ricerca impianti (S01)
 4. **VS3** — Dettaglio impianto (S03)
 5. **VS4** — Ricerca prezzi per carburante (S02)
-6. **VS5** — Impianti vicini "vicino a me" (S04) *(unica slice che aggiunge una dipendenza: geolocalizzazione)*
+6. **VS5** — Impianti vicini "vicino a me" (S04) _(unica slice che aggiunge una dipendenza: geolocalizzazione)_
 7. **VS6** — Shell di navigazione
 
 VS2, VS3, VS4, VS5 non dipendono tecnicamente l'una dall'altra (solo da VS0/VS1): l'ordine 3→4→5→6 riflette priorità di prodotto (schermate meglio definite prima, capability nativa per ultima), non un vincolo architetturale rigido — vedi `architecture.md` §10.

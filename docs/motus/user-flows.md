@@ -18,6 +18,7 @@ Legenda: 🟢 Confermato dal codice/README — 🟡 Assunzione ragionevole per r
 6. 🟡 L'utente seleziona un impianto dalla lista → **Flusso 2**.
 
 ### Alternative / errori
+
 - 🟢 `limit`/`offset` non numerici → 400 `"limit e offset devono essere numeri interi"`.
 - 🟡 Nessun impianto corrisponde ai filtri → 200 con `data: []` (nessun messaggio di "nessun risultato" definito da alcun documento: da progettare lato client).
 - 🟢 `limit` > 1000 o < 1 viene silenziosamente riportato nel range [1, 1000], non genera errore.
@@ -35,6 +36,7 @@ Legenda: 🟢 Confermato dal codice/README — 🟡 Assunzione ragionevole per r
 4. 🟢 Risposta 200 con `{"station": {...}, "prices": [...]}`.
 
 ### Alternative / errori
+
 - 🟢 `id_impianto` inesistente → 404 `"impianto non trovato"`.
 - 🟢 `id` non numerico nel path → nessuna route corrisponde alla regex `/api/stations/(\d+)` → 404 generico `"endpoint non trovato"`.
 - 🟢 Errore database → 500 `"database non disponibile"`.
@@ -52,6 +54,7 @@ Legenda: 🟢 Confermato dal codice/README — 🟡 Assunzione ragionevole per r
 5. 🟡 L'utente può passare al dettaglio dell'impianto associato a una riga → **Flusso 2**.
 
 ### Alternative / errori
+
 - 🟢 `limit`/`offset` non numerici → 400.
 - 🟡 Nessun prezzo corrisponde ai filtri → 200 con `data: []`.
 - 🟢 Errore database → 500.
@@ -71,6 +74,7 @@ Legenda: 🟢 Confermato dal codice/README — 🟡 Assunzione ragionevole per r
 7. 🟡 L'utente seleziona un impianto → **Flusso 2**.
 
 ### Alternative / errori
+
 - 🟢 `lat`/`lon` mancanti o non numerici → 400 `"lat e lon sono obbligatorie e devono essere numeriche"`.
 - 🟢 `lat` fuori range → 400 `"lat deve essere compresa tra -90 e 90"`.
 - 🟢 `lon` fuori range → 400 `"lon deve essere compresa tra -180 e 180"`.
@@ -89,6 +93,7 @@ Legenda: 🟢 Confermato dal codice/README — 🟡 Assunzione ragionevole per r
 3. 🟡 Non è definito alcun comportamento per un servizio "non ok": il codice restituisce sempre `"status": "ok"` se il database risponde; un errore di connessione al DB produce invece 500 `"database non disponibile"`, non un corpo con `status` diverso da `ok`.
 
 ### Alternative / errori
+
 - 🟢 Database non raggiungibile → 500 `"database non disponibile"`.
 
 ---
@@ -104,6 +109,7 @@ Legenda: 🟢 Confermato dal codice/README — 🟡 Assunzione ragionevole per r
 5. 🟢 In caso di riga anagrafica non riconoscibile dal parser (`type_index is None`), l'intero import fallisce con eccezione (nessun import parziale silenzioso, ma nemmeno un log strutturato di errore oltre allo stack trace).
 
 ### Alternative / errori
+
 - 🟢 Riga CSV prezzi con formato inatteso → eccezione Python non gestita, import interrotto (nessun retry automatico oltre al prossimo giorno).
 - 🟢 Chiamata Nominatim fallita → `status: "error"`, cachata; l'impianto non verrà ritentato ai prossimi import salvo `GEOCODING_RETRY_NO_RESULTS=1` (solo per `no_result`, non per `error`).
 - 🟡 Non è chiaro se un import fallito lasci il database nello stato del giorno precedente o in uno stato parziale: la transazione `with connection:` copre `DELETE`+`INSERT`+log `imports`, ma non è documentato alcun meccanismo di notifica in caso di fallimento.

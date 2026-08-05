@@ -6,7 +6,7 @@ Ogni voce confronta un'affermazione scritta (README/codice) con un'osservazione 
 
 ### D1 — Default di `limit` su `GET /api/stations/nearby`
 
-- **Specifica** (`README.md:49`): *"ordinate per distanza e con limite predefinito di 20"*.
+- **Specifica** (`README.md:49`): _"ordinate per distanza e con limite predefinito di 20"_.
 - **Osservato** (`GET /api/stations/nearby?lat=41.9028&lon=12.4964` senza `limit`): `pagination.limit: 50`, `data.length: 50`.
 - **Causa**: il codice usa la stessa funzione `pagination()` di tutti gli endpoint, che ha default 50; non esiste un ramo di codice che imposti 20 per `nearby`.
 - **Impatto per il client**: un client che ometta `limit` fidandosi del README riceve 50 risultati invece di 20. Se la UI (S04) assume 20, deve passare `limit=20` esplicitamente — **non può contare sul default del server**.

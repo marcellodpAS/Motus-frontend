@@ -4,15 +4,15 @@
 
 Cartella analizzata: `/Users/marcellodepaola/Desktop/Projects/Motus` (repository separato, backend Python — **non** una sottocartella di `Motus-frontend`).
 
-| File | Ruolo |
-| --- | --- |
-| `README.md` | Documentazione funzionale e operativa del servizio |
-| `app/api.py` | Server HTTP (endpoint, parametri, codici di errore) |
-| `app/importer.py` | Job di importazione CSV MIMIT e geocodifica |
-| `app/entrypoint.sh` | Avvio container: import iniziale, API, cron |
-| `app/crontab` | Pianificazione import giornaliero |
-| `Dockerfile`, `compose.yaml` | Ambiente di esecuzione |
-| `bruno/motus-api/*.bru` | Collezione di richieste HTTP di esempio (5 endpoint) |
+| File                         | Ruolo                                                |
+| ---------------------------- | ---------------------------------------------------- |
+| `README.md`                  | Documentazione funzionale e operativa del servizio   |
+| `app/api.py`                 | Server HTTP (endpoint, parametri, codici di errore)  |
+| `app/importer.py`            | Job di importazione CSV MIMIT e geocodifica          |
+| `app/entrypoint.sh`          | Avvio container: import iniziale, API, cron          |
+| `app/crontab`                | Pianificazione import giornaliero                    |
+| `Dockerfile`, `compose.yaml` | Ambiente di esecuzione                               |
+| `bruno/motus-api/*.bru`      | Collezione di richieste HTTP di esempio (5 endpoint) |
 
 Nessun altro file (mockup, wireframe, user story, backlog, specifica UI) è presente nella cartella `Motus`. Tutto ciò che segue è ricavato esclusivamente da questi 9 file.
 
@@ -25,6 +25,7 @@ Per riferimento incrociato è stato inoltre consultato `docs/motus/repository-au
 ## 1. Finalità dell'app
 
 🟢 Motus è un servizio che raccoglie quotidianamente i dati pubblici del MIMIT (Ministero delle Imprese e del Made in Italy) su impianti di distribuzione carburanti e relativi prezzi in Italia, li normalizza in un database SQLite e li espone tramite una API HTTP di sola consultazione, per permettere di:
+
 - cercare impianti di distribuzione per comune/provincia/testo libero;
 - consultare il dettaglio di un impianto e i suoi prezzi correnti;
 - cercare prezzi per tipo di carburante e area geografica;
@@ -46,15 +47,15 @@ Per riferimento incrociato è stato inoltre consultato `docs/motus/repository-au
 
 Ricavati uno a uno dagli endpoint esposti da `app/api.py` e documentati in `README.md`:
 
-| ID | Caso d'uso | Attore | Endpoint |
-| --- | --- | --- | --- |
-| UC1 | Verificare lo stato del servizio (conteggio impianti/prezzi, ultimo import) | Operatore | `GET /health` |
-| UC2 | Cercare impianti per comune, provincia o testo libero, con paginazione | Utente consultante | `GET /api/stations` |
-| UC3 | Visualizzare il dettaglio di un impianto e tutti i suoi prezzi | Utente consultante | `GET /api/stations/{id}` |
-| UC4 | Cercare prezzi filtrando per carburante, provincia o comune | Utente consultante | `GET /api/prices` |
-| UC5 | Trovare gli impianti più vicini a una posizione geografica, ordinati per distanza | Utente consultante | `GET /api/stations/nearby` |
-| UC6 | Importare quotidianamente i dataset MIMIT e aggiornare prezzi/impianti | Sistema (job automatico) | n/a (cron, non HTTP) |
-| UC7 | Geocodificare gli impianti privi di indirizzo/coordinate complete | Sistema (job automatico) | n/a (chiamata a Nominatim) |
+| ID  | Caso d'uso                                                                        | Attore                   | Endpoint                   |
+| --- | --------------------------------------------------------------------------------- | ------------------------ | -------------------------- |
+| UC1 | Verificare lo stato del servizio (conteggio impianti/prezzi, ultimo import)       | Operatore                | `GET /health`              |
+| UC2 | Cercare impianti per comune, provincia o testo libero, con paginazione            | Utente consultante       | `GET /api/stations`        |
+| UC3 | Visualizzare il dettaglio di un impianto e tutti i suoi prezzi                    | Utente consultante       | `GET /api/stations/{id}`   |
+| UC4 | Cercare prezzi filtrando per carburante, provincia o comune                       | Utente consultante       | `GET /api/prices`          |
+| UC5 | Trovare gli impianti più vicini a una posizione geografica, ordinati per distanza | Utente consultante       | `GET /api/stations/nearby` |
+| UC6 | Importare quotidianamente i dataset MIMIT e aggiornare prezzi/impianti            | Sistema (job automatico) | n/a (cron, non HTTP)       |
+| UC7 | Geocodificare gli impianti privi di indirizzo/coordinate complete                 | Sistema (job automatico) | n/a (chiamata a Nominatim) |
 
 🔴 Nessun caso d'uso di scrittura (creazione/modifica/cancellazione di impianti o prezzi da parte di un utente) è presente: l'API è di sola lettura (`GET`/`OPTIONS`, `app/api.py:40-46`).
 
@@ -99,15 +100,15 @@ Vedi `domain-model.md` per il dettaglio completo di attributi, tipi e chiavi. Si
 
 🟢 Ricavati da `app/api.py:47-69` e dai relativi messaggi:
 
-| Condizione | Codice | Corpo risposta |
-| --- | --- | --- |
-| Percorso non riconosciuto | 404 | `{"error": "endpoint non trovato"}` |
-| `id_impianto` inesistente su `/api/stations/{id}` | 404 | `{"error": "impianto non trovato"}` |
-| `limit`/`offset` non interi | 400 | `{"error": "limit e offset devono essere numeri interi"}` |
-| `lat`/`lon` mancanti o non numerici su `/nearby` | 400 | `{"error": "lat e lon sono obbligatorie e devono essere numeriche"}` |
-| `lat` fuori intervallo [-90, 90] | 400 | `{"error": "lat deve essere compresa tra -90 e 90"}` |
-| `lon` fuori intervallo [-180, 180] | 400 | `{"error": "lon deve essere compresa tra -180 e 180"}` |
-| Errore del database (`sqlite3.Error`) | 500 | `{"error": "database non disponibile"}` |
+| Condizione                                        | Codice | Corpo risposta                                                       |
+| ------------------------------------------------- | ------ | -------------------------------------------------------------------- |
+| Percorso non riconosciuto                         | 404    | `{"error": "endpoint non trovato"}`                                  |
+| `id_impianto` inesistente su `/api/stations/{id}` | 404    | `{"error": "impianto non trovato"}`                                  |
+| `limit`/`offset` non interi                       | 400    | `{"error": "limit e offset devono essere numeri interi"}`            |
+| `lat`/`lon` mancanti o non numerici su `/nearby`  | 400    | `{"error": "lat e lon sono obbligatorie e devono essere numeriche"}` |
+| `lat` fuori intervallo [-90, 90]                  | 400    | `{"error": "lat deve essere compresa tra -90 e 90"}`                 |
+| `lon` fuori intervallo [-180, 180]                | 400    | `{"error": "lon deve essere compresa tra -180 e 180"}`               |
+| Errore del database (`sqlite3.Error`)             | 500    | `{"error": "database non disponibile"}`                              |
 
 🟡 `limit` fuori range [1, 1000] e `offset` negativo **non generano errore**: vengono silenziosamente riportati entro i limiti (`min`/`max` in `app/api.py:21-27`). Se questo sia il comportamento voluto per un client applicativo è segnalato in `open-questions.md`.
 

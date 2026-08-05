@@ -23,7 +23,7 @@ Da `screen-inventory.md`: S01 Ricerca impianti (testo libero + filtri), S02 Rice
 
 ### 1.1 Categoria dell'app
 
-🟢 Le funzionalità di Motus (ricerca impianti di distribuzione carburanti, prezzi, impianti vicini) corrispondono alla categoria **`androidx.car.app.category.POI`** (Point of Interest). La documentazione ufficiale cita testualmente: *"Provides functionality relevant to finding points of interest such as parking spots, charging stations, and **gas stations**"* — [Set up your project](https://developer.android.com/training/cars/apps/library/set-up-project#supported-app-categories).
+🟢 Le funzionalità di Motus (ricerca impianti di distribuzione carburanti, prezzi, impianti vicini) corrispondono alla categoria **`androidx.car.app.category.POI`** (Point of Interest). La documentazione ufficiale cita testualmente: _"Provides functionality relevant to finding points of interest such as parking spots, charging stations, and **gas stations**"_ — [Set up your project](https://developer.android.com/training/cars/apps/library/set-up-project#supported-app-categories).
 
 🟢 Fino alla Car App Library 1.3 esistevano anche le categorie dedicate `androidx.car.app.category.PARKING` e `androidx.car.app.category.CHARGING`, ora **deprecate a favore di POI** — [Build a point of interest app](https://developer.android.com/training/cars/apps/poi).
 
@@ -35,56 +35,58 @@ Non esiste una categoria generica "utility" o "informazione libera": un'app deve
 
 ### 1.3 Compatibilità delle funzionalità Motus
 
-| Schermata Motus | Compatibilità | Motivazione |
-| --- | --- | --- |
-| S04 Impianti vicini | 🟢 Ottimo fit | Corrisponde esattamente all'uso previsto della categoria POI e del template `PlaceListMapTemplate` (elenco di POI + mappa), che la documentazione cita esplicitamente per "gas stations". Nessun input testuale richiesto (usa geolocalizzazione). |
-| S03 Dettaglio impianto | 🟢 Compatibile | Rappresentabile come riga/`Pane` raggiunta da un elenco POI. |
-| S01 Ricerca impianti (testo libero) | 🟡 Compatibile solo in parte | L'elenco risultati è compatibile con i template POI, ma l'inserimento di testo libero da tastiera è un input fortemente disincentivato durante la guida (vedi §1.5); va riprogettato per l'uso in auto (es. solo da fermo, o tramite voce). |
-| S02 Ricerca prezzi per carburante | 🟡 Compatibile solo in parte | Stesso problema di S01, aggravato dal fatto che il template POI è pensato per "luoghi" (place), non per righe di prezzo scorporate dal luogo — il fit del template va verificato in fase di design, non è automatico. |
+| Schermata Motus                     | Compatibilità                | Motivazione                                                                                                                                                                                                                                        |
+| ----------------------------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S04 Impianti vicini                 | 🟢 Ottimo fit                | Corrisponde esattamente all'uso previsto della categoria POI e del template `PlaceListMapTemplate` (elenco di POI + mappa), che la documentazione cita esplicitamente per "gas stations". Nessun input testuale richiesto (usa geolocalizzazione). |
+| S03 Dettaglio impianto              | 🟢 Compatibile               | Rappresentabile come riga/`Pane` raggiunta da un elenco POI.                                                                                                                                                                                       |
+| S01 Ricerca impianti (testo libero) | 🟡 Compatibile solo in parte | L'elenco risultati è compatibile con i template POI, ma l'inserimento di testo libero da tastiera è un input fortemente disincentivato durante la guida (vedi §1.5); va riprogettato per l'uso in auto (es. solo da fermo, o tramite voce).        |
+| S02 Ricerca prezzi per carburante   | 🟡 Compatibile solo in parte | Stesso problema di S01, aggravato dal fatto che il template POI è pensato per "luoghi" (place), non per righe di prezzo scorporate dal luogo — il fit del template va verificato in fase di design, non è automatico.                              |
 
 ### 1.4 Template consentiti
 
 🟢 Per la categoria POI sono esplicitamente documentati:
+
 - **`PlaceListMapTemplate`** — elenco di POI accanto a una mappa renderizzata dall'host. Richiede il permesso `androidx.car.app.MAP_TEMPLATES` in `AndroidManifest.xml` ed è utilizzabile solo da app con categoria `POI` (o le deprecate `PARKING`/`CHARGING`) — [Build a point of interest app](https://developer.android.com/training/cars/apps/poi#access-map-templates).
 - **`MapWithContentTemplate`** — mappa disegnata dall'app stessa con contenuti sovrapposti.
 - Template generici disponibili a tutte le categorie: **List**, **Grid** e altri elencati in [Templates overview](https://developer.android.com/design/ui/cars/guides/templates/overview).
 
-🔴 Non è stato possibile enumerare in questa sessione l'elenco completo di *tutti* i template generici (la pagina Templates overview è stata troncata nell'estrazione); va consultata integralmente prima della progettazione UI.
+🔴 Non è stato possibile enumerare in questa sessione l'elenco completo di _tutti_ i template generici (la pagina Templates overview è stata troncata nell'estrazione); va consultata integralmente prima della progettazione UI.
 
 ### 1.5 Limitazioni durante la guida
 
 🟢 Dai [Templated app requirements](https://developers.google.com/cars/design/create-apps/ux-requirements/templated-apps) di Google:
+
 - **MUST**: task flow di **massimo 5 passaggi**; **SHOULD**: 2-3 passaggi.
 - **MUST NOT**: terminare un flow di 5 passaggi con un template a lista, a meno che non sia abilitata la feature "Adaptive task limits" (il 5° passaggio deve essere Navigation, Message o Pane).
 - **SHOULD**: mostrare contenuti per almeno 8 secondi prima di una transizione automatica.
 - **MUST**: reindirizzare al telefono le azioni non permesse durante la guida, invitando l'utente a guardare lo schermo solo quando è sicuro farlo.
-- 🟢 Vincoli sui contenuti visivi (change notes 2022): niente elementi animati; niente immagini salvo eccezioni esplicite (icone, logo statico, e — rilevante per Motus — *"Navigation, parking, and charging apps may display images and photographs to aid in driving decision-making"*).
+- 🟢 Vincoli sui contenuti visivi (change notes 2022): niente elementi animati; niente immagini salvo eccezioni esplicite (icone, logo statico, e — rilevante per Motus — _"Navigation, parking, and charging apps may display images and photographs to aid in driving decision-making"_).
 
 ### 1.6 Input consentiti
 
-🟢 Touch sullo schermo dell'infotainment; controller rotativo ("rotary") su alcuni veicoli, che riusa le stesse API della navigazione a schede da tastiera. La tastiera è tecnicamente supportata da Android Automotive OS ma la documentazione la definisce esplicitamente *"less common input methods in cars"* — [Car app quality — Associated large screen quality guidelines](https://developer.android.com/docs/quality-guidelines/car-app-quality).
+🟢 Touch sullo schermo dell'infotainment; controller rotativo ("rotary") su alcuni veicoli, che riusa le stesse API della navigazione a schede da tastiera. La tastiera è tecnicamente supportata da Android Automotive OS ma la documentazione la definisce esplicitamente _"less common input methods in cars"_ — [Car app quality — Associated large screen quality guidelines](https://developer.android.com/docs/quality-guidelines/car-app-quality).
 
 ### 1.7 Utilizzo della voce
 
-🟢 La ricerca vocale nativa nel Car App Library non è documentata come funzionalità del template stesso; l'integrazione vocale ufficiale avviene tramite **App Actions for Cars** con Gemini/Google Assistant, con esempio esplicito calzante per Motus: *"Hey Google, find nearby charging stations on ExampleApp"* — [Build a point of interest app](https://developer.android.com/training/cars/apps/poi#integrate-app-actions).
+🟢 La ricerca vocale nativa nel Car App Library non è documentata come funzionalità del template stesso; l'integrazione vocale ufficiale avviene tramite **App Actions for Cars** con Gemini/Google Assistant, con esempio esplicito calzante per Motus: _"Hey Google, find nearby charging stations on ExampleApp"_ — [Build a point of interest app](https://developer.android.com/training/cars/apps/poi#integrate-app-actions).
 
 🟢 Requisito trasversale: è necessario ottenere il permesso dell'utente prima di registrare audio per input vocale — [Templated app requirements](https://developers.google.com/cars/design/create-apps/ux-requirements/templated-apps).
 
 ### 1.8 Requisiti di sicurezza
 
-🟢 Google dichiara esplicitamente di trattare la distrazione del guidatore come priorità assoluta: *"Google takes driver distraction very seriously. Your app must belong to one of the supported categories and meet specific design requirements"* — [Use the Android for Cars App Library](https://developer.android.com/training/cars/apps). I criteri dettagliati (per livelli/tier) sono in [Car app quality](https://developer.android.com/docs/quality-guidelines/car-app-quality).
+🟢 Google dichiara esplicitamente di trattare la distrazione del guidatore come priorità assoluta: _"Google takes driver distraction very seriously. Your app must belong to one of the supported categories and meet specific design requirements"_ — [Use the Android for Cars App Library](https://developer.android.com/training/cars/apps). I criteri dettagliati (per livelli/tier) sono in [Car app quality](https://developer.android.com/docs/quality-guidelines/car-app-quality).
 
 ### 1.9 Necessità di approvazioni
 
 🟢 **Sì**, review manuale aggiuntiva rispetto alla normale review Play Store, con impatto diverso a seconda del canale di rilascio — [Distribute to cars](https://developer.android.com/training/cars/distribute):
 
-| Canale | Esito review |
-| --- | --- |
-| Internal sharing (solo Android Auto) | Nessuna review |
-| Internal testing | Nessuna review |
-| Closed testing | Non bloccante (notifica di non conformità, ma submission approvata) |
-| Open testing | Bloccante |
-| Production | Bloccante |
+| Canale                               | Esito review                                                        |
+| ------------------------------------ | ------------------------------------------------------------------- |
+| Internal sharing (solo Android Auto) | Nessuna review                                                      |
+| Internal testing                     | Nessuna review                                                      |
+| Closed testing                       | Non bloccante (notifica di non conformità, ma submission approvata) |
+| Open testing                         | Bloccante                                                           |
+| Production                           | Bloccante                                                           |
 
 ### 1.10 Necessità di entitlement
 
@@ -102,6 +104,7 @@ Non esiste una categoria generica "utility" o "informazione libera": un'app deve
   </intent-filter>
 </service>
 ```
+
 — [Set up your project](https://developer.android.com/training/cars/apps/library/set-up-project#declare-carappservice). Le schermate (`Screen`) e i template sono costruiti tramite le API native `androidx.car.app.model.*`, non tramite componenti React Native.
 
 ### 1.12 Compatibilità con Expo Managed Workflow
@@ -128,7 +131,7 @@ Non esiste una categoria generica "utility" o "informazione libera": un'app deve
 
 🟢 **`androidx.car.app`** ("Android for Cars App Library", Jetpack) — [release notes](https://developer.android.com/jetpack/androidx/releases/car-app). Nessun modulo Expo ufficiale equivalente esiste ad oggi.
 
-🟡 Esiste una libreria di terze parti community, **`react-native-carplay`**, che dalla propria documentazione dichiara di supportare *"both Apple CarPlay and Android Auto"* con un setup nativo Android dedicato — [repository GitHub](https://github.com/birkir/react-native-carplay), file `AndroidAuto.md`. Non è un prodotto Google né Expo, non è garantita nel tempo, e non elimina la necessità di codice nativo/config plugin: sposta solo il bridging JS↔nativo, non la necessità di dichiarare categoria e superare la review Play.
+🟡 Esiste una libreria di terze parti community, **`react-native-carplay`**, che dalla propria documentazione dichiara di supportare _"both Apple CarPlay and Android Auto"_ con un setup nativo Android dedicato — [repository GitHub](https://github.com/birkir/react-native-carplay), file `AndroidAuto.md`. Non è un prodotto Google né Expo, non è garantita nel tempo, e non elimina la necessità di codice nativo/config plugin: sposta solo il bridging JS↔nativo, non la necessità di dichiarare categoria e superare la review Play.
 
 ### 1.18 Possibilità di test su simulatori/emulatori
 
@@ -140,7 +143,7 @@ Non esiste una categoria generica "utility" o "informazione libera": un'app deve
 
 ### 2.1 Categoria dell'app
 
-🟢 Apple elenca esplicitamente tra le categorie di app CarPlay: *"EV charging, fueling, parking, public safety, quick food ordering, voice-based conversational apps, and driving task apps"* — [CarPlay | Apple Developer](https://developer.apple.com/carplay/).
+🟢 Apple elenca esplicitamente tra le categorie di app CarPlay: _"EV charging, fueling, parking, public safety, quick food ordering, voice-based conversational apps, and driving task apps"_ — [CarPlay | Apple Developer](https://developer.apple.com/carplay/).
 
 🟡 La categoria semanticamente più vicina a Motus è **"Fueling"** (ricerca/confronto carburanti). In alternativa più debole, **"Parking"** (POI generico stile parcheggio). **Non è stato possibile verificare in questa sessione la definizione esatta e i requisiti funzionali della categoria Fueling** (vedi limiti in §4): la CarPlay Developer Guide ufficiale in PDF non è stata estraibile come testo leggibile con gli strumenti disponibili in questa sessione. Questo è un **prerequisito da chiudere prima di qualunque impegno di sviluppo**: va verificato se la categoria Fueling richiede funzionalità transazionali (es. avviare/pagare un rifornimento) che Motus — puramente informativo — non possiede.
 
@@ -176,7 +179,7 @@ Stesso schema di rischio di Android Auto (§1.3): S04 "vicino a me" è il miglio
 
 ### 2.9 Necessità di approvazioni
 
-🟢 **Sì, obbligatoria e discrezionale.** Apple richiede una richiesta esplicita di **CarPlay app entitlement**, specifica per categoria, tramite modulo ufficiale: *"go to http://developer.apple.com/carplay and provide information about your app, including the category of entitlement that you are requesting"*. **CarPlay apps must be single-category** — un solo entitlement/categoria per app. La pagina di richiesta ([developer.apple.com/contact/carplay/](https://developer.apple.com/contact/carplay/)) richiede login sviluppatore Apple e inquadra la richiesta come *"let us know if your app has the potential to be supported by CarPlay"*, formulazione che conferma la **natura discrezionale** dell'approvazione: non è una submission automatica come su Google Play, ma una valutazione caso per caso da parte di Apple, senza garanzia di esito positivo per un'app indipendente non affiliata a un brand carburante/rete di distributori.
+🟢 **Sì, obbligatoria e discrezionale.** Apple richiede una richiesta esplicita di **CarPlay app entitlement**, specifica per categoria, tramite modulo ufficiale: _"go to http://developer.apple.com/carplay and provide information about your app, including the category of entitlement that you are requesting"_. **CarPlay apps must be single-category** — un solo entitlement/categoria per app. La pagina di richiesta ([developer.apple.com/contact/carplay/](https://developer.apple.com/contact/carplay/)) richiede login sviluppatore Apple e inquadra la richiesta come _"let us know if your app has the potential to be supported by CarPlay"_, formulazione che conferma la **natura discrezionale** dell'approvazione: non è una submission automatica come su Google Play, ma una valutazione caso per caso da parte di Apple, senza garanzia di esito positivo per un'app indipendente non affiliata a un brand carburante/rete di distributori.
 
 ### 2.10 Necessità di entitlement
 
@@ -214,7 +217,7 @@ Stesso schema di rischio di Android Auto (§1.3): S04 "vicino a me" è il miglio
 
 ### 2.18 Possibilità di test su simulatori
 
-🟢 **Sì.** Apple distribuisce un **CarPlay Simulator** tramite "Additional Tools for Xcode": *"Download additional tools for Xcode to access the CarPlay simulator and easily replicate a CarPlay environment from your Mac"* — [CarPlay | Apple Developer — Tools and resources](https://developer.apple.com/carplay/). L'indice della Developer Guide conferma una sezione dedicata "CarPlay Simulator".
+🟢 **Sì.** Apple distribuisce un **CarPlay Simulator** tramite "Additional Tools for Xcode": _"Download additional tools for Xcode to access the CarPlay simulator and easily replicate a CarPlay environment from your Mac"_ — [CarPlay | Apple Developer — Tools and resources](https://developer.apple.com/carplay/). L'indice della Developer Guide conferma una sezione dedicata "CarPlay Simulator".
 
 **Nota**: il CarPlay Simulator richiede comunque un'app con la scena CarPlay già implementata nativamente; non testa un'app senza entitlement/Scene Delegate.
 
@@ -224,4 +227,4 @@ Stesso schema di rischio di Android Auto (§1.3): S04 "vicino a me" è il miglio
 
 - La **CarPlay Developer Guide** ufficiale (`developer.apple.com/download/files/CarPlay-Developer-Guide.pdf`) è stata scaricata ma il testo non è risultato estraibile in chiaro con gli strumenti disponibili in questa sessione (il documento è tornato come flussi PDF compressi non decodificati): è stato possibile leggere solo la struttura/indice (titoli dei capitoli), non il contenuto integrale. Tutti i punti della sezione 2 marcati 🟡/🔴 dipendono da questa limitazione tecnica, **non da assenza di documentazione ufficiale** (la documentazione esiste ed è pubblica).
 - **Azione richiesta prima di procedere**: un secondo passaggio con lettura diretta della guida (es. apertura del PDF in un lettore, oppure consultazione delle pagine `developer.apple.com/documentation/CarPlay/*` sezione per sezione) per confermare in modo testuale primario: definizione della categoria Fueling, elenco template assegnati, tabella limitazioni di guida, requisiti di sicurezza puntuali.
-- Nessuna fonte consultata in questa sessione, né Android né Apple, menziona Motus, il dominio "prezzi carburante in Italia" o normative italiane/europee specifiche per la distribuzione di carburanti in-car: la verifica è stata condotta esclusivamente sui requisiti *tecnici e di piattaforma*, non su eventuali vincoli normativi settoriali (es. trasparenza prezzi carburanti, che riguardano il backend MIMIT, non l'integrazione automotive).
+- Nessuna fonte consultata in questa sessione, né Android né Apple, menziona Motus, il dominio "prezzi carburante in Italia" o normative italiane/europee specifiche per la distribuzione di carburanti in-car: la verifica è stata condotta esclusivamente sui requisiti _tecnici e di piattaforma_, non su eventuali vincoli normativi settoriali (es. trasparenza prezzi carburanti, che riguardano il backend MIMIT, non l'integrazione automotive).

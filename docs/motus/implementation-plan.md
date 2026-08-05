@@ -17,6 +17,7 @@ Traduce `architecture.md` in una sequenza di fasi verificabili. Ogni fase raggru
 **Perché prima di tutto**: ogni vertical slice successiva dipende da entrambe (`architecture.md` §10). Costruirle una volta sola evita di ripetere client HTTP e gestione stati vuoto/caricamento/errore in ciascuna schermata.
 
 **Gate di uscita**:
+
 - `src/services/motus` espone tipi e funzioni per le 4 chiamate realmente necessarie (`stations.search`, `stations.getById`, `stations.nearby`, `prices.search`), verificati con test unitari contro le fixture derivate da `api-contract.md` (incluse le tre forme di risposta: successo, errore applicativo, lista vuota).
 - Gli organism di stato condiviso (caricamento, vuoto, errore) esistono e sono testati in isolamento, senza dipendere da alcuna feature.
 - Nessuna route applicativa nuova esiste ancora in `src/app`.
@@ -30,6 +31,7 @@ Traduce `architecture.md` in una sequenza di fasi verificabili. Ogni fase raggru
 **Perché per prima tra le 4 schermate**: è il caso d'uso meglio definito (`UC2`), l'unico i cui filtri (`comune`, `provincia`, `q`) sono già interamente verificati dal vivo (`api-contract.md`), e la sua "forma" (lista con filtri e paginazione) è quella riusata da S02 e S04 — costruirla per prima ammortizza il costo del template su tutte le schermate successive.
 
 **Gate di uscita**:
+
 - Dall'avvio dell'app è raggiungibile una lista reale di impianti (anche solo tramite un'unica route, senza shell di navigazione — vedi Fase 5).
 - Coperti: popolato, nessun risultato (`data: []`), errore parametri (400 solo per `limit`/`offset` non interi), errore server (mockato, 500 non riproducibile dal vivo).
 - Paginazione funzionante secondo la regola osservata (`offset` incrementale, stop quando `offset + data.length >= pagination.total`).
@@ -43,6 +45,7 @@ Traduce `architecture.md` in una sequenza di fasi verificabili. Ogni fase raggru
 **Perché subito dopo S01**: è la destinazione di navigazione di tutte le altre schermate (S01, S02, S04 puntano tutte a S03) — costruirla presto permette a S02 e S04 (Fasi 3–4) di collegarsi a una destinazione reale invece che a un placeholder.
 
 **Gate di uscita**:
+
 - Raggiungibile da VS2 con `id_impianto` reale.
 - Coperti tutti gli stati osservati dal vivo in `api-screen-mapping.md`: popolato con prezzi, popolato senza prezzi (`prices: []`), senza coordinate geocodificate (`geocoding_status` ≠ `success`), non trovato (404 `"impianto non trovato"`), id malformato (404 `"endpoint non trovato"` — messaggio indistinguibile, la UI non deve fingere di saperne di più del backend).
 
@@ -55,6 +58,7 @@ Traduce `architecture.md` in una sequenza di fasi verificabili. Ogni fase raggru
 **Perché dopo S03 e non prima**: riusa sia il template "lista con filtri" (validato in Fase 1) sia la destinazione S03 (pronta da Fase 2), quindi non introduce nulla di nuovo a livello di architettura — solo un nuovo modulo di servizio (`prices.search`) e il tipo distinto `PriceRow` già previsto in `architecture.md` §5.
 
 **Gate di uscita**:
+
 - Filtro per `carburante` funzionante (nessuna validazione enum lato client: il campo è testo libero non enumerato in modo esaustivo, `open-questions.md` #11).
 - Riga risultato naviga a S03 riusando la stessa route dinamica di VS3, non una copia.
 - Coperti: popolato, vuoto, errore parametri, errore server — stessa evidenza di VS2.
@@ -70,6 +74,7 @@ Traduce `architecture.md` in una sequenza di fasi verificabili. Ogni fase raggru
 **Azione di apertura fase, non anticipata altrove**: aggiunta formale di `expo-location` (o libreria Expo equivalente al momento dell'implementazione, da verificare contro la documentazione versionata SDK 54 — `AGENTS.md`) tramite `expo install`, così da restare allineata al resolver Expo.
 
 **Gate di uscita**:
+
 - Permesso di posizione richiesto con fallback esplicito se negato o non disponibile (nessun requisito di background location, `product-requirements.md` §10).
 - Riusa il template "lista con filtri" (senza filtri testuali, solo posizione + `limit`).
 - Coperti: popolato ordinato per distanza, nessun impianto con coordinate disponibili (`total_available: 0`), posizione mancante/non numerica (400), posizione fuori range (400, messaggi distinti lat/lon).
@@ -84,6 +89,7 @@ Traduce `architecture.md` in una sequenza di fasi verificabili. Ogni fase raggru
 **Perché per ultima**: solo ora esistono realmente ≥ 2 schermate di ingresso (S01, S02, S04) da collegare — costruire prima la shell sarebbe stata IA speculativa (ADR-0005).
 
 **Gate di uscita**:
+
 - I tre punti di ingresso (S01, S02, S04) sono raggiungibili da una navigazione coerente (tab o equivalente, deciso in fase di implementazione, non in questo piano).
 - Nessuna schermata rimane isolata o raggiungibile solo da deep link manuale.
 - Back-navigation da S03 riporta alla schermata di provenienza corretta.
@@ -94,13 +100,13 @@ Traduce `architecture.md` in una sequenza di fasi verificabili. Ogni fase raggru
 
 Le seguenti attività **non hanno una fase assegnata** perché dipendono da decisioni non ancora prese (prodotto, design, o entrambe) — sono elencate per tracciabilità, non per pianificazione:
 
-| Attività | Bloccata da | Documento |
-| --- | --- | --- |
-| Automotive (Android Auto / CarPlay) | Decisione di prodotto su quali schermate portare in auto; per CarPlay anche approvazione entitlement Apple | `automotive-architecture-decision.md` |
-| Design system definitivo | Riferimento "Stitch" irrisolto; nessun progetto su `DesignSync` | `design-inputs.md`, `mcp-audit.md` |
-| Dark mode esplicito | Nessun requisito raccolto | `product-requirements.md` |
-| Modalità offline / cache persistente | Nessun requisito raccolto, nessuna libreria di cache introdotta (ADR-0002) | `open-questions.md` #7 |
-| Autenticazione | Assenza dichiarata intenzionale o provvisoria, non chiarito | `open-questions.md` #5 |
+| Attività                             | Bloccata da                                                                                                | Documento                             |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| Automotive (Android Auto / CarPlay)  | Decisione di prodotto su quali schermate portare in auto; per CarPlay anche approvazione entitlement Apple | `automotive-architecture-decision.md` |
+| Design system definitivo             | Riferimento "Stitch" irrisolto; nessun progetto su `DesignSync`                                            | `design-inputs.md`, `mcp-audit.md`    |
+| Dark mode esplicito                  | Nessun requisito raccolto                                                                                  | `product-requirements.md`             |
+| Modalità offline / cache persistente | Nessun requisito raccolto, nessuna libreria di cache introdotta (ADR-0002)                                 | `open-questions.md` #7                |
+| Autenticazione                       | Assenza dichiarata intenzionale o provvisoria, non chiarito                                                | `open-questions.md` #5                |
 
 ## Riepilogo ordine
 

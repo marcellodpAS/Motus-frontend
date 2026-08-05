@@ -7,7 +7,7 @@ Ogni voce indica: documento/i coinvolti, natura del problema, impatto se non chi
 ### 1. Default di `limit` su `/api/stations/nearby`
 
 - **Documenti**: `README.md:49` vs `app/api.py:21-27,146-156`.
-- **Problema**: il README dichiara "*con limite predefinito di 20*" per l'endpoint nearby. Il codice usa la stessa funzione `pagination()` di tutti gli altri endpoint, il cui default è **50** se `limit` non è passato. Non esiste nel codice alcun default speciale a 20 per `nearby`.
+- **Problema**: il README dichiara "_con limite predefinito di 20_" per l'endpoint nearby. Il codice usa la stessa funzione `pagination()` di tutti gli altri endpoint, il cui default è **50** se `limit` non è passato. Non esiste nel codice alcun default speciale a 20 per `nearby`.
 - **Impatto**: un client che si affida alla documentazione per omettere `limit` riceverà 50 risultati, non 20. Da verificare con chi mantiene il backend se il codice o il README è la fonte corretta.
 
 ### 2. Nome del campo "totale" incoerente tra endpoint
@@ -83,17 +83,17 @@ Ogni voce indica: documento/i coinvolti, natura del problema, impatto se non chi
 
 ## Riepilogo per priorità di chiarimento
 
-| # | Tema | Priorità |
-| --- | --- | --- |
-| 6 | Collegamento Motus ↔ Motus-frontend / contratto API condiviso | Alta |
-| 1 | Contraddizione default `limit` su `/nearby` | Alta |
-| 5 | Assenza auth: intenzionale o provvisoria? | Alta |
-| 8 | Perimetro automotive: dentro o fuori scopo? | Alta |
-| 2 | Incoerenza nome campo `total`/`total_available` | Media |
-| 10 | Visibilità stazioni `source_only` tra endpoint | Media |
-| 7 | Funzionalità mobile-specifiche (offline, notifiche, geolocalizzazione) | Media |
-| 3 | Parametro `q` non documentato | Bassa |
-| 4 | Correzione silenziosa di `limit`/`offset` fuori range | Bassa |
-| 9 | Uso previsto di `/health` in UI | Bassa |
-| 11 | Enumerazione carburanti | Bassa |
-| 12 | Gestione import fallito | Bassa (per questa specifica; alta per operatività) |
+| #   | Tema                                                                   | Priorità                                           |
+| --- | ---------------------------------------------------------------------- | -------------------------------------------------- |
+| 6   | Collegamento Motus ↔ Motus-frontend / contratto API condiviso          | Alta                                               |
+| 1   | Contraddizione default `limit` su `/nearby`                            | Alta                                               |
+| 5   | Assenza auth: intenzionale o provvisoria?                              | Alta                                               |
+| 8   | Perimetro automotive: dentro o fuori scopo?                            | Alta                                               |
+| 2   | Incoerenza nome campo `total`/`total_available`                        | Media                                              |
+| 10  | Visibilità stazioni `source_only` tra endpoint                         | Media                                              |
+| 7   | Funzionalità mobile-specifiche (offline, notifiche, geolocalizzazione) | Media                                              |
+| 3   | Parametro `q` non documentato                                          | Bassa                                              |
+| 4   | Correzione silenziosa di `limit`/`offset` fuori range                  | Bassa                                              |
+| 9   | Uso previsto di `/health` in UI                                        | Bassa                                              |
+| 11  | Enumerazione carburanti                                                | Bassa                                              |
+| 12  | Gestione import fallito                                                | Bassa (per questa specifica; alta per operatività) |
