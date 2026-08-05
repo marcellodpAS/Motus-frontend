@@ -44,7 +44,7 @@ src/
 ├── components/   # atoms, molecules, organisms, templates UI riutilizzabili
 ├── features/     # funzionalità verticali
 ├── hooks/        # hook condivisi
-├── services/     # future integrazioni esterne
+├── services/     # client API (src/services/motus)
 ├── stores/       # stato globale condiviso (Zustand)
 ├── theme/        # token semantici
 ├── types/
@@ -97,6 +97,15 @@ atoms → molecules → organisms → templates e routes
 Nella fase di integrazione si analizzeranno progetto, design system e schermate
 Stitch; i valori approvati sostituiranno i token in `src/theme/tokens.js`, da cui
 verranno propagati al tema Tailwind e ai componenti composti.
+
+## Client API
+
+`src/services/motus` legge la base URL da `EXPO_PUBLIC_API_URL` (mai hardcodata
+nei componenti) e centralizza parsing JSON, timeout, cancellazione via
+`AbortSignal` e normalizzazione degli errori in una gerarchia tipizzata
+(`ApiError`). Configurazione locale per simulatore iOS, emulatore Android e
+dispositivo fisico: `docs/motus/local-setup.md`. Contratto verificato dal
+vivo: `docs/motus/api-contract.md`.
 
 ## Nuove feature
 
