@@ -1,0 +1,202 @@
+import { fireEvent, render } from "@testing-library/react-native";
+import * as Location from "expo-location";
+
+import { MapScreen } from "@/features/map/MapScreen";
+import { nearby } from "@/services/motus/stations";
+import type { NearbyStation } from "@/services/motus/types";
+
+jest.mock("expo-location");
+jest.mock("@/services/motus/stations");
+
+const mockPush = jest.fn();
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
+const requestForegroundPermissionsAsyncMock =
+  Location.requestForegroundPermissionsAsync as jest.MockedFunction<
+    typeof Location.requestForegroundPermissionsAsync
+  >;
+const hasServicesEnabledAsyncMock =
+  Location.hasServicesEnabledAsync as jest.MockedFunction<
+    typeof Location.hasServicesEnabledAsync
+  >;
+const getCurrentPositionAsyncMock =
+  Location.getCurrentPositionAsync as jest.MockedFunction<
+    typeof Location.getCurrentPositionAsync
+  >;
+const nearbyMock = nearby as jest.MockedFunction<typeof nearby>;
+
+function grantedPermission() {
+  return {
+    status: Location.PermissionStatus.GRANTED,
+    granted: true,
+    canAskAgain: true,
+    expires: "never" as const,
+  };
+}
+
+function positionFixture() {
+  return {
+    coords: {
+      latitude: 41.9028,
+      longitude: 12.4964,
+      altitude: null,
+      accuracy: 5,
+      altitudeAccuracy: null,
+      heading: null,
+      speed: null,
+    },
+    timestamp: 1_754_000_000_000,
+  };
+}
+
+function stationFixture(overrides: Partial<NearbyStation> = {}): NearbyStation {
+  return {
+    id_impianto: 1,
+    gestore: "Esempio",
+    bandiera: "Agip Eni",
+    tipo_impianto: "Stradale",
+    nome_impianto: "Impianto Est",
+    indirizzo: "Via Test 1",
+    comune: "Roma",
+    provincia: "RM",
+    latitudine: 41.9,
+    longitudine: 12.5,
+    updated_at: "2026-08-04T06:30:00.377849+00:00",
+    via_geocoded: null,
+    latitudine_completa: 41.9,
+    longitudine_completa: 12.5,
+    geocoding_status: "success",
+    prices: [
+      {
+        id_impianto: 1,
+        carburante: "Benzina",
+        prezzo: 1.699,
+        self_service: 1,
+        data_comunicazione: null,
+        updated_at: "2026-08-04T06:30:00.377849+00:00",
+      },
+    ],
+    distance_km: 1.2,
+    ...overrides,
+  };
+}
+
+describe("MapScreen", () => {
+  beforeEach(() => {
+    requestForegroundPermissionsAsyncMock.mockReset();
+    hasServicesEnabledAsyncMock.mockReset();
+    getCurrentPositionAsyncMock.mockReset();
+    nearbyMock.mockReset();
+    mockPush.mockReset();
+  });
+
+  it("renders pins and the 'cheapest nearby' bottom sheet ranked by price", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(
+      grantedPermission(),
+    );
+    hasServicesEnabledAsyncMock.mockResolvedValue(true);
+    getCurrentPositionAsyncMock.mockResolvedValue(positionFixture());
+    nearbyMock.mockResolvedValue({
+      origin: { lat: 41.9028, lon: 12.4964 },
+      data: [
+        stationFixture({
+          id_impianto: 1,
+          nome_impianto: "Caro",
+          prices: [
+            {
+              id_impianto: 1,
+              carburante: "Benzina",
+              prezzo: 1.9,
+              self_service: 1,
+              data_comunicazione: null,
+              updated_at: "2026-08-04T06:30:00.377849+00:00",
+            },
+          ],
+        }),
+        stationFixture({
+          id_impianto: 2,
+          nome_impianto: "Economico",
+          prices: [
+            {
+              id_impianto: 2,
+              carburante: "Benzina",
+              prezzo: 1.5,
+              self_service: 1,
+              data_comunicazione: null,
+              updated_at: "2026-08-04T06:30:00.377849+00:00",
+            },
+          ],
+        }),
+      ],
+      pagination: { limit: 20, offset: 0, total: 2 },
+    });
+
+    const { findByText, getAllByText } = await render(<MapScreen />);
+
+    expect(await findByText("Impianti più vicini")).toBeTruthy();
+    // Both stations rendered as pins AND as bottom-sheet rows -> price appears twice each.
+    expect(getAllByText("1.900 €").length).toBeGreaterThan(0);
+    expect(getAllByText("1.500 €").length).toBeGreaterThan(0);
+  });
+
+  it("navigates to the station detail route on row press", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(
+      grantedPermission(),
+    );
+    hasServicesEnabledAsyncMock.mockResolvedValue(true);
+    getCurrentPositionAsyncMock.mockResolvedValue(positionFixture());
+    nearbyMock.mockResolvedValue({
+      origin: { lat: 41.9028, lon: 12.4964 },
+      data: [
+        stationFixture({ id_impianto: 42, nome_impianto: "Impianto Est" }),
+      ],
+      pagination: { limit: 20, offset: 0, total: 1 },
+    });
+
+    const { findAllByText } = await render(<MapScreen />);
+    const [row] = await findAllByText("Impianto Est");
+    await fireEvent.press(row);
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: "/stations/[id]",
+      params: { id: "42" },
+    });
+  });
+
+  it("shows a distinct message when location permission is denied", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue({
+      status: Location.PermissionStatus.DENIED,
+      granted: false,
+      canAskAgain: true,
+      expires: "never" as const,
+    });
+
+    const { findByText } = await render(<MapScreen />);
+
+    expect(await findByText(/Permesso di posizione negato/)).toBeTruthy();
+    expect(nearbyMock).not.toHaveBeenCalled();
+  });
+
+  it("shows an explicit empty message when no station has coordinates", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(
+      grantedPermission(),
+    );
+    hasServicesEnabledAsyncMock.mockResolvedValue(true);
+    getCurrentPositionAsyncMock.mockResolvedValue(positionFixture());
+    nearbyMock.mockResolvedValue({
+      origin: { lat: 41.9028, lon: 12.4964 },
+      data: [],
+      pagination: { limit: 20, offset: 0, total: 0 },
+    });
+
+    const { findByText } = await render(<MapScreen />);
+
+    expect(
+      await findByText(
+        "Nessun impianto con coordinate disponibili nelle vicinanze.",
+      ),
+    ).toBeTruthy();
+  });
+});
