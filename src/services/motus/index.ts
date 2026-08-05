@@ -20,8 +20,18 @@ export type {
   NormalizeErrorContext,
 } from "./errors";
 
-export type { GeocodingStatus, Pagination, Price, Station } from "./types";
+export type {
+  GeocodingStatus,
+  NearbyStation,
+  Pagination,
+  Price,
+  PriceRow,
+  Station,
+  StationSummary,
+} from "./types";
 
 export * as stations from "./stations";
+export * as prices from "./prices";
 
-export { stationTitle } from "./stationDisplay";
+export { cheapestPrice, stationTitle } from "./stationDisplay";
+export { formatDataComunicazione, parseDataComunicazione } from "./priceFormat";

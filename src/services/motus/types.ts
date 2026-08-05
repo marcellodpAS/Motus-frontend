@@ -48,3 +48,29 @@ export interface Pagination {
   offset: number;
   total: number;
 }
+
+/**
+ * GET /api/stations/{id} nests `prices` separately from the station object
+ * itself (api-contract.md §GET /api/stations/{id}) — this is the same
+ * station shape minus that nested array.
+ */
+export type StationSummary = Omit<Station, "prices">;
+
+/**
+ * GET /api/prices returns a flattened row (ADR-0001): a distinct shape from
+ * `Station`, missing `indirizzo`/`gestore`/`bandiera`/`tipo_impianto` on
+ * purpose — never forced onto the `Station` type with fake optional fields.
+ */
+export interface PriceRow extends Price {
+  nome_impianto: string;
+  comune: string;
+  provincia: string;
+  via_geocoded: string | null;
+  latitudine_completa: number | null;
+  longitudine_completa: number | null;
+}
+
+/** GET /api/stations/nearby row: same shape as `Station` plus the computed distance. */
+export interface NearbyStation extends Station {
+  distance_km: number;
+}
