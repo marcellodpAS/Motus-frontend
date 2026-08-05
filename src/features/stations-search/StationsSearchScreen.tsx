@@ -5,17 +5,8 @@ import { ListItem } from "@/components/molecules/ListItem";
 import { ListScreenTemplate } from "@/components/templates/ListScreenTemplate";
 import type { FunctionalListStatus } from "@/components/organisms/FunctionalList";
 import { useStationsSearch } from "@/features/stations-search/useStationsSearch";
-import { stationTitle } from "@/services/motus/stationDisplay";
+import { cheapestPrice, stationTitle } from "@/services/motus/stationDisplay";
 import type { Station } from "@/services/motus/types";
-
-/** Cheapest price across `prices[]`, or `undefined` (handles the observed `prices: []` case). */
-function cheapestPrice(station: Station): string | undefined {
-  if (station.prices.length === 0) return undefined;
-  const cheapest = station.prices.reduce((min, price) =>
-    price.prezzo < min.prezzo ? price : min,
-  );
-  return `${cheapest.prezzo.toFixed(3)} €`;
-}
 
 /**
  * S01 screen (docs/motus/screen-inventory.md, VS2 in
@@ -45,7 +36,7 @@ export function StationsSearchScreen() {
         onEndReached: loadMore,
         keyExtractor: (station) => String(station.id_impianto),
         renderItem: (station) => {
-          const price = cheapestPrice(station);
+          const price = cheapestPrice(station.prices);
           return (
             <ListItem
               title={stationTitle(station)}
