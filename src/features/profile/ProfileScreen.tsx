@@ -24,7 +24,7 @@ export function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <MotusHeader logoPosition="left" />
+      <MotusHeader />
       <ScrollView className="flex-1 px-md py-md">
         <View className="mb-lg items-center gap-sm px-lg">
           <Icon name="person" color="outline" size={40} />

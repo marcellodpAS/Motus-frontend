@@ -26,7 +26,7 @@ export function FavoritesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <MotusHeader logoPosition="left" />
+      <MotusHeader />
       <View className="flex-1 px-md">
         {status === "loading" ? <LoadingPanel /> : null}
         {status === "error" ? (

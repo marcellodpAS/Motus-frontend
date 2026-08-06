@@ -16,19 +16,20 @@ export interface MotusHeaderProps {
   /** Renders a bare search icon button (Stitch Mappa Motus, Dettaglio Stazione, Segnala Prezzo headers). */
   showSearchIcon?: boolean;
   onProfilePress?: () => void;
-  /** Where the logo sits when there's no back button: "left" (Previsioni Pro) or "center" (Mappa Motus). */
-  logoPosition?: "left" | "center";
-  /** Mappa Motus header floats over the map with no opaque background/border. */
-  transparent?: boolean;
 }
 
 /**
- * Shared top bar reproducing the 3 header layouts observed across all 4
- * Stitch screens (`stitch-screen-inventory.md`): "standard" (back + small
- * logo mark + title, e.g. Dettaglio Stazione), "search-bar" (logo left +
- * inline search pill, e.g. Previsioni Pro) and "overlay" (transparent,
- * centered logo, e.g. Mappa Motus). One organism, not three, since all
- * three share the same trailing profile button and the same 56px bar.
+ * Shared top bar. Two layouts: "standard" (back + small logo mark + title,
+ * e.g. Dettaglio Stazione) and "logo left" (wordmark, optional inline search
+ * pill, trailing actions) — one organism, not two, since both share the same
+ * trailing profile button and the same 56px bar.
+ *
+ * Stitch also showed the Map screen with a transparent bar and a centred logo
+ * (`stitch-screen-inventory.md` §5). That variant is gone: on a real device
+ * the Map header reading differently from every other screen's was reported
+ * as inconsistent, and the centred mark could never actually sit on the
+ * screen's centre — laid out between an empty leading slot and two trailing
+ * buttons, it always drifted left by half the buttons' width.
  */
 export function MotusHeader({
   title,
@@ -36,20 +37,14 @@ export function MotusHeader({
   showSearchBar = false,
   showSearchIcon = false,
   onProfilePress,
-  logoPosition = "left",
-  transparent = false,
 }: MotusHeaderProps) {
   const router = useRouter();
   const handleSearchPress = () => router.push("/stations");
 
-  const containerClassName = transparent
-    ? "absolute top-0 left-0 right-0 z-10 px-md pb-sm"
-    : "border-b-hairline border-border bg-surface px-md pb-sm shadow-sm";
-
   return (
     <SafeAreaView
-      edges={transparent ? ["top"] : []}
-      className={containerClassName}
+      edges={[]}
+      className="border-b-hairline border-border bg-surface px-md pb-sm shadow-sm"
     >
       <View className="min-h-touch-comfortable flex-row items-center gap-sm pt-sm">
         {onBack ? (
@@ -71,7 +66,7 @@ export function MotusHeader({
           </>
         ) : (
           <>
-            {logoPosition === "left" ? <MotusLogo size={20} /> : null}
+            <MotusLogo size={20} />
             {showSearchBar ? (
               <Pressable
                 accessibilityRole="button"
@@ -83,9 +78,7 @@ export function MotusHeader({
                 <AppText color="muted">Cerca impianti…</AppText>
               </Pressable>
             ) : (
-              <View className="flex-1 flex-row justify-center">
-                {logoPosition === "center" ? <MotusLogo size={20} /> : null}
-              </View>
+              <View className="flex-1" />
             )}
             {showSearchIcon ? (
               <HeaderIconButton

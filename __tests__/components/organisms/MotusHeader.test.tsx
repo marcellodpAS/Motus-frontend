@@ -25,15 +25,13 @@ describe("MotusHeader", () => {
     expect(onBack).toHaveBeenCalledTimes(1);
   });
 
-  it("renders the MOTUS wordmark when logoPosition is left and there is no back action", async () => {
-    const { getByText } = await render(<MotusHeader logoPosition="left" />);
+  it("renders the MOTUS wordmark when there is no back action", async () => {
+    const { getByText } = await render(<MotusHeader />);
     expect(getByText("MOTUS")).toBeTruthy();
   });
 
   it("search icon navigates to /stations", async () => {
-    const { getByLabelText } = await render(
-      <MotusHeader logoPosition="left" showSearchIcon />,
-    );
+    const { getByLabelText } = await render(<MotusHeader showSearchIcon />);
 
     await fireEvent.press(getByLabelText("Cerca impianti"));
     expect(pushMock).toHaveBeenCalledWith("/stations");
@@ -52,7 +50,7 @@ describe("MotusHeader", () => {
   it("always exposes a Profilo button and calls onProfilePress", async () => {
     const onProfilePress = jest.fn();
     const { getByLabelText } = await render(
-      <MotusHeader logoPosition="left" onProfilePress={onProfilePress} />,
+      <MotusHeader onProfilePress={onProfilePress} />,
     );
 
     await fireEvent.press(getByLabelText("Profilo"));
