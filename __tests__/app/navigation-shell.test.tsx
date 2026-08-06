@@ -135,41 +135,33 @@ describe("navigation shell (Task 19: tab bar -> S01/S02/S03/S04/report, and back
     getCurrentPositionAsyncMock.mockReset();
   });
 
-  it(
-    "renders the Map tab at / by default, with the Favorites/Pro/Profile tabs reachable",
-    async () => {
-      requestForegroundPermissionsAsyncMock.mockResolvedValue(
-        deniedPermission(),
-      );
+  // First render of the whole tab shell (root layout + 4 screens) is the
+  // heaviest mount in this file; under full-suite worker contention (CI) it
+  // clears 600ms standalone but can cross the 5000ms default when many
+  // suites run in parallel. Bump it instead of the whole file/suite.
+  it("renders the Map tab at / by default, with the Favorites/Pro/Profile tabs reachable", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(deniedPermission());
 
-      const testInstance = renderRouter("src/app", { initialUrl: "/" });
-      const view = await testInstance;
+    const testInstance = renderRouter("src/app", { initialUrl: "/" });
+    const view = await testInstance;
 
-      expect(testInstance.getPathname()).toBe("/");
-      // Permission denied -> ErrorState is rendered instead of the map itself.
-      expect(
-        await view.findByText(/Permesso di posizione negato/),
-      ).toBeTruthy();
+    expect(testInstance.getPathname()).toBe("/");
+    // Permission denied -> ErrorState is rendered instead of the map itself.
+    expect(await view.findByText(/Permesso di posizione negato/)).toBeTruthy();
 
-      await fireEvent.press(view.getByLabelText(/^Favorites, tab/));
-      expect(testInstance.getPathname()).toBe("/favorites");
+    await fireEvent.press(view.getByLabelText(/^Favorites, tab/));
+    expect(testInstance.getPathname()).toBe("/favorites");
 
-      await fireEvent.press(view.getByLabelText(/^Pro, tab/));
-      expect(testInstance.getPathname()).toBe("/pro");
-      expect(
-        await view.findByText("Previsioni non ancora disponibili"),
-      ).toBeTruthy();
+    await fireEvent.press(view.getByLabelText(/^Pro, tab/));
+    expect(testInstance.getPathname()).toBe("/pro");
+    expect(
+      await view.findByText("Previsioni non ancora disponibili"),
+    ).toBeTruthy();
 
-      await fireEvent.press(view.getByLabelText(/^Profile, tab/));
-      expect(testInstance.getPathname()).toBe("/profile");
-      expect(await view.findByText("Profilo non disponibile")).toBeTruthy();
-    },
-    // First render of the whole tab shell (root layout + 4 screens) is the
-    // heaviest mount in this file; under full-suite worker contention (CI)
-    // it clears 600ms standalone but can cross the 5000ms default when many
-    // suites run in parallel. Bump it instead of the whole file/suite.
-    15000,
-  );
+    await fireEvent.press(view.getByLabelText(/^Profile, tab/));
+    expect(testInstance.getPathname()).toBe("/profile");
+    expect(await view.findByText("Profilo non disponibile")).toBeTruthy();
+  }, 15000);
 
   it("reaches S01 from the Map header search icon, and back navigates to the tab shell", async () => {
     requestForegroundPermissionsAsyncMock.mockResolvedValue(deniedPermission());
