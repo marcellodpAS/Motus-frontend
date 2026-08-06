@@ -437,7 +437,13 @@ export function MapScreen() {
     <SafeAreaView edges={["top"]} className="flex-1 bg-mapBackground">
       <MotusHeader showSearchIcon />
 
-      <View className="flex-1">
+      {/*
+        `overflow-hidden` is load-bearing: the tile layer deliberately lays
+        out an overscan margin beyond every viewport edge, and React Native
+        paints children outside their container unless told not to. Without
+        the clip those tiles are drawn over the header sitting above them.
+      */}
+      <View className="flex-1 overflow-hidden">
         <MapSurface
           absorbed={absorbed}
           onSizeChange={handleSizeChange}
