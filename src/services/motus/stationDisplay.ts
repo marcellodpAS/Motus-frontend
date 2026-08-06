@@ -84,3 +84,52 @@ export function preferredPriceBreakdown(
     })
     .filter((line): line is PreferredPriceLine => line !== null);
 }
+
+export interface PriceLine {
+  /** Present only when the price is shown because it matched a preference. */
+  fuel?: string;
+  priceLabel: string;
+}
+
+/**
+ * What a map pin should print for one station.
+ *
+ * With no preference: the single cheapest price, unlabelled (the pre-existing
+ * behaviour). With one or more preferred fuels: one labelled line per
+ * preferred fuel this station actually sells, and *nothing at all* when it
+ * sells none of them — the map's own filter ("se seleziono un carburante che
+ * quella stazione non ha, la stazione non deve comparire"). Deliberately
+ * strict, unlike `cheapestPrice`, whose fallback to the overall cheapest is
+ * right for a list row the user already asked to see but wrong for a pin the
+ * user asked to filter out.
+ */
+export function priceLines(
+  prices: Price[],
+  preferredFuels: readonly string[],
+): PriceLine[] {
+  if (preferredFuels.length === 0) {
+    const label = cheapestPrice(prices);
+    return label ? [{ priceLabel: label }] : [];
+  }
+  return preferredPriceBreakdown(prices, preferredFuels);
+}
+
+/**
+ * Numeric counterpart of `priceLines` for ranking: the cheapest price a
+ * station offers among the preferred fuels, `null` when it offers none of
+ * them (or has no prices at all). Same strict semantics — a station excluded
+ * from the map must not be able to rank as "cheapest nearby".
+ */
+export function cheapestValue(
+  prices: Price[],
+  preferredFuels: readonly string[] = [],
+): number | null {
+  const candidates =
+    preferredFuels.length === 0
+      ? prices
+      : prices.filter((price) =>
+          matchesFuelPreference(price.carburante, preferredFuels),
+        );
+  if (candidates.length === 0) return null;
+  return Math.min(...candidates.map((price) => price.prezzo));
+}
