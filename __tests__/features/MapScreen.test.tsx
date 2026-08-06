@@ -165,6 +165,84 @@ describe("MapScreen", () => {
     });
   });
 
+  it("tapping a pin shows an info popup instead of navigating directly", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(
+      grantedPermission(),
+    );
+    hasServicesEnabledAsyncMock.mockResolvedValue(true);
+    getCurrentPositionAsyncMock.mockResolvedValue(positionFixture());
+    nearbyMock.mockResolvedValue({
+      origin: { lat: 41.9028, lon: 12.4964 },
+      data: [
+        stationFixture({ id_impianto: 42, nome_impianto: "Impianto Est" }),
+      ],
+      pagination: { limit: 20, offset: 0, total: 1 },
+    });
+
+    const { findByRole, queryByLabelText } = await render(<MapScreen />);
+    const pin = await findByRole("button", {
+      name: "Impianto Est, 1.699 €",
+    });
+    await fireEvent.press(pin);
+
+    expect(mockPush).not.toHaveBeenCalled();
+    expect(queryByLabelText("Apri scheda di Impianto Est")).toBeTruthy();
+  });
+
+  it("the popup's 'Apri' action navigates to the station detail route", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(
+      grantedPermission(),
+    );
+    hasServicesEnabledAsyncMock.mockResolvedValue(true);
+    getCurrentPositionAsyncMock.mockResolvedValue(positionFixture());
+    nearbyMock.mockResolvedValue({
+      origin: { lat: 41.9028, lon: 12.4964 },
+      data: [
+        stationFixture({ id_impianto: 42, nome_impianto: "Impianto Est" }),
+      ],
+      pagination: { limit: 20, offset: 0, total: 1 },
+    });
+
+    const { findByRole, getByLabelText } = await render(<MapScreen />);
+    const pin = await findByRole("button", {
+      name: "Impianto Est, 1.699 €",
+    });
+    await fireEvent.press(pin);
+    await fireEvent.press(getByLabelText("Apri scheda di Impianto Est"));
+
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: "/stations/[id]",
+      params: { id: "42" },
+    });
+  });
+
+  it("the popup's close action dismisses it without navigating", async () => {
+    requestForegroundPermissionsAsyncMock.mockResolvedValue(
+      grantedPermission(),
+    );
+    hasServicesEnabledAsyncMock.mockResolvedValue(true);
+    getCurrentPositionAsyncMock.mockResolvedValue(positionFixture());
+    nearbyMock.mockResolvedValue({
+      origin: { lat: 41.9028, lon: 12.4964 },
+      data: [
+        stationFixture({ id_impianto: 42, nome_impianto: "Impianto Est" }),
+      ],
+      pagination: { limit: 20, offset: 0, total: 1 },
+    });
+
+    const { findByRole, getByLabelText, queryByLabelText } = await render(
+      <MapScreen />,
+    );
+    const pin = await findByRole("button", {
+      name: "Impianto Est, 1.699 €",
+    });
+    await fireEvent.press(pin);
+    await fireEvent.press(getByLabelText("Chiudi"));
+
+    expect(mockPush).not.toHaveBeenCalled();
+    expect(queryByLabelText("Apri scheda di Impianto Est")).toBeNull();
+  });
+
   it("shows a distinct message when location permission is denied", async () => {
     requestForegroundPermissionsAsyncMock.mockResolvedValue({
       status: Location.PermissionStatus.DENIED,

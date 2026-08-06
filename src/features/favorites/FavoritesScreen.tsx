@@ -2,14 +2,15 @@ import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AppText } from "@/components/atoms/AppText";
 import { EmptyState } from "@/components/molecules/EmptyState";
 import { ErrorState } from "@/components/molecules/ErrorState";
 import { ListItem } from "@/components/molecules/ListItem";
+import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import { LoadingPanel } from "@/components/organisms/LoadingPanel";
 import { MotusHeader } from "@/components/organisms/MotusHeader";
 import { useFavorites } from "@/features/favorites/useFavorites";
-import { cheapestPrice, stationTitle } from "@/services/motus/stationDisplay";
+import { stationTitle } from "@/services/motus/stationDisplay";
+import { useFuelPreferencesStore } from "@/stores/useFuelPreferencesStore";
 
 /**
  * Tab "Favorites" (Task 19, `stitch-implementation-gap.md` row 10): no
@@ -21,6 +22,7 @@ import { cheapestPrice, stationTitle } from "@/services/motus/stationDisplay";
 export function FavoritesScreen() {
   const router = useRouter();
   const { status, favorites, errorMessage, retry } = useFavorites();
+  const preferredFuels = useFuelPreferencesStore((state) => state.fuels);
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -38,16 +40,16 @@ export function FavoritesScreen() {
         ) : null}
         {status === "success"
           ? favorites.map(({ station, prices }) => {
-              const price = cheapestPrice(prices);
               return (
                 <ListItem
                   key={station.id_impianto}
                   title={stationTitle(station)}
                   subtitle={`${station.comune} (${station.provincia})`}
                   trailing={
-                    price ? (
-                      <AppText variant="caption">{price}</AppText>
-                    ) : undefined
+                    <PriceDisplay
+                      prices={prices}
+                      preferredFuels={preferredFuels}
+                    />
                   }
                   onPress={() =>
                     router.push({

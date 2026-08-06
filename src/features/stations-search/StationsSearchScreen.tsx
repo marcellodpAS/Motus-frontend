@@ -1,13 +1,14 @@
 import { useRouter } from "expo-router";
 
-import { AppText } from "@/components/atoms/AppText";
 import { HeaderIconButton } from "@/components/molecules/HeaderIconButton";
 import { ListItem } from "@/components/molecules/ListItem";
+import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import { ListScreenTemplate } from "@/components/templates/ListScreenTemplate";
 import type { FunctionalListStatus } from "@/components/organisms/FunctionalList";
 import { useStationsSearch } from "@/features/stations-search/useStationsSearch";
-import { cheapestPrice, stationTitle } from "@/services/motus/stationDisplay";
+import { stationTitle } from "@/services/motus/stationDisplay";
 import type { Station } from "@/services/motus/types";
+import { useFuelPreferencesStore } from "@/stores/useFuelPreferencesStore";
 
 /**
  * S01 screen (docs/motus/screen-inventory.md, VS2 in
@@ -18,6 +19,7 @@ export function StationsSearchScreen() {
   const router = useRouter();
   const { status, data, errorMessage, filters, setFilters, loadMore, retry } =
     useStationsSearch();
+  const preferredFuels = useFuelPreferencesStore((state) => state.fuels);
 
   const listStatus: FunctionalListStatus =
     status === "success" && data.length === 0 ? "empty" : status;
@@ -46,13 +48,15 @@ export function StationsSearchScreen() {
         onEndReached: loadMore,
         keyExtractor: (station) => String(station.id_impianto),
         renderItem: (station) => {
-          const price = cheapestPrice(station.prices);
           return (
             <ListItem
               title={stationTitle(station)}
               subtitle={`${station.comune} (${station.provincia}) · ${station.bandiera}`}
               trailing={
-                price ? <AppText variant="caption">{price}</AppText> : undefined
+                <PriceDisplay
+                  prices={station.prices}
+                  preferredFuels={preferredFuels}
+                />
               }
               onPress={() =>
                 router.push({

@@ -1,4 +1,8 @@
-import { cheapestPrice, stationTitle } from "@/services/motus/stationDisplay";
+import {
+  cheapestPrice,
+  preferredPriceBreakdown,
+  stationTitle,
+} from "@/services/motus/stationDisplay";
 import type { Price } from "@/services/motus/types";
 
 function priceFixture(overrides: Partial<Price> = {}): Price {
@@ -54,5 +58,47 @@ describe("cheapestPrice", () => {
     ];
 
     expect(cheapestPrice(prices)).toBe("1.754 €");
+  });
+
+  it("with a fuel preference, returns the cheapest among matching fuels only", () => {
+    const prices = [
+      priceFixture({ prezzo: 1.899, carburante: "Benzina" }),
+      priceFixture({ prezzo: 1.754, carburante: "Gasolio" }),
+      priceFixture({ prezzo: 1.65, carburante: "Benzina Shell V Power" }),
+    ];
+
+    expect(cheapestPrice(prices, ["Benzina"])).toBe("1.650 €");
+  });
+
+  it("falls back to the overall cheapest when the preference matches nothing at this station", () => {
+    const prices = [
+      priceFixture({ prezzo: 1.899, carburante: "Benzina" }),
+      priceFixture({ prezzo: 1.754, carburante: "Gasolio" }),
+    ];
+
+    expect(cheapestPrice(prices, ["Metano"])).toBe("1.754 €");
+  });
+});
+
+describe("preferredPriceBreakdown", () => {
+  it("returns one labelled line per preferred fuel that has a match", () => {
+    const prices = [
+      priceFixture({ prezzo: 1.899, carburante: "Benzina" }),
+      priceFixture({ prezzo: 1.85, carburante: "Benzina Shell V Power" }),
+      priceFixture({ prezzo: 1.72, carburante: "Gasolio" }),
+    ];
+
+    expect(preferredPriceBreakdown(prices, ["Benzina", "Gasolio"])).toEqual([
+      { fuel: "Benzina", priceLabel: "1.850 €" },
+      { fuel: "Gasolio", priceLabel: "1.720 €" },
+    ]);
+  });
+
+  it("omits a preferred fuel with no match at this station, never a fabricated line", () => {
+    const prices = [priceFixture({ prezzo: 1.899, carburante: "Benzina" })];
+
+    expect(preferredPriceBreakdown(prices, ["Benzina", "Metano"])).toEqual([
+      { fuel: "Benzina", priceLabel: "1.899 €" },
+    ]);
   });
 });

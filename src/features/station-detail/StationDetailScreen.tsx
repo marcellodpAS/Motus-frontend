@@ -11,10 +11,12 @@ import { LoadingPanel } from "@/components/organisms/LoadingPanel";
 import { MotusHeader } from "@/components/organisms/MotusHeader";
 import { useStationDetail } from "@/features/station-detail/useStationDetail";
 import { openExternalNavigation } from "@/services/motus/externalNavigation";
+import { matchesFuelPreference } from "@/services/motus/fuelPreference";
 import { formatDataComunicazione } from "@/services/motus/priceFormat";
 import { stationTitle } from "@/services/motus/stationDisplay";
 import type { Price, StationSummary } from "@/services/motus/types";
 import { useFavoritesStore } from "@/stores/useFavoritesStore";
+import { useFuelPreferencesStore } from "@/stores/useFuelPreferencesStore";
 
 export interface StationDetailScreenProps {
   id: string;
@@ -43,8 +45,35 @@ function detailRows(station: StationSummary): InfoPanelRow[] {
   ];
 }
 
+/**
+ * Preferred fuels first (Task 19 follow-up: fuel preference setting) —
+ * never hides a price, only reorders, since detail is the one place
+ * meant to stay exhaustive.
+ */
+function orderByPreference(
+  prices: Price[],
+  preferredFuels: readonly string[],
+): Price[] {
+  if (preferredFuels.length === 0) return prices;
+  return [...prices].sort((a, b) => {
+    const aMatches = matchesFuelPreference(a.carburante, preferredFuels)
+      ? 0
+      : 1;
+    const bMatches = matchesFuelPreference(b.carburante, preferredFuels)
+      ? 0
+      : 1;
+    return aMatches - bMatches;
+  });
+}
+
 /** One "Current Prices" row (Stitch: colored bar + badge, `stitch-screen-inventory.md` §3). */
-function PriceListItem({ price }: { price: Price }) {
+function PriceListItem({
+  price,
+  preferred,
+}: {
+  price: Price;
+  preferred: boolean;
+}) {
   return (
     <View className="flex-row items-center justify-between py-xs">
       <View className="flex-row items-center gap-md">
@@ -52,7 +81,10 @@ function PriceListItem({ price }: { price: Price }) {
           className={`h-10 w-1.5 rounded-full ${price.self_service ? "bg-success" : "bg-tertiaryContainer"}`}
         />
         <View>
-          <AppText variant="body">{price.carburante}</AppText>
+          <View className="flex-row items-center gap-xs">
+            {preferred ? <Icon name="star" color="primary" size={14} /> : null}
+            <AppText variant="body">{price.carburante}</AppText>
+          </View>
           <View className="mt-xs flex-row items-center gap-xs">
             <Icon name="schedule" color="muted" size={14} />
             <AppText variant="caption" color="muted">
@@ -118,6 +150,8 @@ export function StationDetailScreen({ id }: StationDetailScreenProps) {
     station ? state.isFavorite(station.id_impianto) : false,
   );
   const toggleFavorite = useFavoritesStore((state) => state.toggle);
+  const preferredFuels = useFuelPreferencesStore((state) => state.fuels);
+  const orderedPrices = orderByPreference(prices, preferredFuels);
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -202,10 +236,14 @@ export function StationDetailScreen({ id }: StationDetailScreenProps) {
               <View className="gap-sm">
                 <AppText variant="headlineMd">Prezzi attuali</AppText>
                 <View className="gap-sm">
-                  {prices.map((price) => (
+                  {orderedPrices.map((price) => (
                     <PriceListItem
                       key={`${price.carburante}-${price.self_service}`}
                       price={price}
+                      preferred={
+                        preferredFuels.length > 0 &&
+                        matchesFuelPreference(price.carburante, preferredFuels)
+                      }
                     />
                   ))}
                 </View>

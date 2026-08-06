@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 
-import { AppText } from "@/components/atoms/AppText";
 import { ListItem } from "@/components/molecules/ListItem";
+import { PriceDisplay } from "@/components/molecules/PriceDisplay";
 import {
   FunctionalList,
   type FunctionalListStatus,
@@ -11,8 +11,9 @@ import {
   useNearbyStations,
   type NearbyStatus,
 } from "@/features/nearby-stations/useNearbyStations";
-import { cheapestPrice, stationTitle } from "@/services/motus/stationDisplay";
+import { stationTitle } from "@/services/motus/stationDisplay";
 import type { NearbyStation } from "@/services/motus/types";
+import { useFuelPreferencesStore } from "@/stores/useFuelPreferencesStore";
 
 function toListStatus(
   status: NearbyStatus,
@@ -47,6 +48,7 @@ function loadingMessage(status: NearbyStatus): string | undefined {
 export function NearbyStationsScreen() {
   const router = useRouter();
   const { status, data, errorMessage, retry } = useNearbyStations();
+  const preferredFuels = useFuelPreferencesStore((state) => state.fuels);
 
   return (
     <ScreenTemplate title="Impianti vicini" onBack={() => router.back()}>
@@ -59,13 +61,15 @@ export function NearbyStationsScreen() {
         onRetry={retry}
         keyExtractor={(station) => String(station.id_impianto)}
         renderItem={(station) => {
-          const price = cheapestPrice(station.prices);
           return (
             <ListItem
               title={stationTitle(station)}
               subtitle={`${station.comune} (${station.provincia}) · ${station.distance_km.toFixed(1)} km`}
               trailing={
-                price ? <AppText variant="caption">{price}</AppText> : undefined
+                <PriceDisplay
+                  prices={station.prices}
+                  preferredFuels={preferredFuels}
+                />
               }
               onPress={() =>
                 router.push({
