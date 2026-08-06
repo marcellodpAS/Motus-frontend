@@ -11,6 +11,18 @@ import type { NearbyStation, Pagination } from "@/services/motus/types";
  */
 const RESULT_LIMIT = 20;
 
+export interface UseNearbyStationsOptions {
+  /**
+   * How many stations to ask for. Defaults to the S04 list's 20. The Map
+   * screen raises it, because its radius selector filters the *already
+   * returned* set: `GET /api/stations/nearby` has no radius parameter at all
+   * (`api-contract.md` §GET /api/stations/nearby lists only `lat`, `lon`,
+   * `limit`, `offset` — and `offset` is accepted but ignored), so a wider
+   * radius can only ever show more stations if more were fetched.
+   */
+  limit?: number;
+}
+
 export type NearbyStatus =
   | "requesting-permission"
   | "permission-denied"
@@ -24,6 +36,15 @@ export interface UseNearbyStationsResult {
   data: NearbyStation[];
   pagination: Pagination | null;
   errorMessage: string | null;
+  /**
+   * The device fix the search was centred on — `null` until one is obtained.
+   * Exposed because the Map screen has to draw the user's own position
+   * ("quando l'utente viene geolocalizzato, deve comparire il punto sulla
+   * mappa"); re-requesting the position there would mean a second permission
+   * flow and a second fix that could disagree with the one the results are
+   * relative to.
+   */
+  origin: { latitude: number; longitude: number } | null;
   retry: () => void;
 }
 
@@ -38,11 +59,14 @@ export interface UseNearbyStationsResult {
  * ignores `offset` for this endpoint, so `retry()` re-runs the whole chain
  * rather than loading a next page.
  */
-export function useNearbyStations(): UseNearbyStationsResult {
+export function useNearbyStations({
+  limit = RESULT_LIMIT,
+}: UseNearbyStationsOptions = {}): UseNearbyStationsResult {
   const [status, setStatus] = useState<NearbyStatus>("requesting-permission");
   const [data, setData] = useState<NearbyStation[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [origin, setOrigin] = useState<UseNearbyStationsResult["origin"]>(null);
 
   const abortRef = useRef<AbortController | null>(null);
   const requestIdRef = useRef(0);
@@ -87,11 +111,16 @@ export function useNearbyStations(): UseNearbyStationsResult {
         const position = await Location.getCurrentPositionAsync();
         if (requestId !== requestIdRef.current) return;
 
+        setOrigin({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+
         const result = await stationsService.nearby(
           {
             lat: position.coords.latitude,
             lon: position.coords.longitude,
-            limit: RESULT_LIMIT,
+            limit,
           },
           { signal: controller.signal },
         );
@@ -110,7 +139,7 @@ export function useNearbyStations(): UseNearbyStationsResult {
         setStatus("error");
       }
     })();
-  }, []);
+  }, [limit]);
 
   useEffect(() => {
     run();
@@ -120,5 +149,5 @@ export function useNearbyStations(): UseNearbyStationsResult {
     };
   }, [run]);
 
-  return { status, data, pagination, errorMessage, retry: run };
+  return { status, data, pagination, errorMessage, origin, retry: run };
 }
